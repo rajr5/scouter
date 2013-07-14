@@ -1,0 +1,20 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+{% load account %}
+{% load socialaccount %}
+{% load url from future %}
+
+{% block head_title %}{% trans "Sign In" %}{% endblock %}
+
+{% block content %}
+{#Google#}
+<h1>Glass Scouter</h1>
+<p>Scouter for Glass finds the power levels of people in pictures you take with your Google Glass&trade;</p>
+<a href="{% provider_login_url "google" method='js_sdk' %}">Google</a>
+
+{% endblock %}
+
+
+
+

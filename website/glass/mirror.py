@@ -1,5 +1,5 @@
 from oauth2client.tools import run
-from oauth2client.client import OAuth2WebServerFlow
+from oauth2client.client import OAuth2WebServerFlow, OAuth2Credentials
 from oauth2client import multistore_file
 from oauth2client.file import Storage
 import json
@@ -34,12 +34,19 @@ class Mirror(object):
         else:
             self.scopes = scopes
 
-    def get_my_oauth(self, scope=None):
+
+
+    def get_my_oauth(self, scope=None, hostname='localhost', port="8000"):
         """
         For testing only!!!!!!!
         Used to get an oauth token for yourself (or test user)
         Will pop up a browser request to allow access.
         """
+        # Wow! Look at this hack!
+        sys.argv.append('--auth_host_port')
+        sys.argv.append(port)
+        sys.argv.append('--auth_host_name')
+        sys.argv.append(hostname)
         try:
             argv = FLAGS(sys.argv)  # parse flags
         except gflags.FlagsError, e:
@@ -51,15 +58,13 @@ class Mirror(object):
         credentials = None
         try:
             credentials = storage.get()
-            print "get credentials", credentials
         except Exception:
             pass
             # credentials = None
         if credentials is None:
             credentials = run(flow, storage)
-            print "credentials was none, now", credentials
         # print credentials
-        self.service = self._get_service(credentials)
+        self._get_service(credentials)
         return credentials
 
     def post_timeline(self, timeline):
@@ -100,17 +105,87 @@ class Mirror(object):
         """
         Posts a contact/service that the user will be able to share with
         """
+        print contact
+        print contact.contact_body()
         return self.service.contacts().insert(body=contact.contact_body()).execute()
 
     def list_contacts(self):
         """
         Returns a list of Contact objects
         """
-        contact = self.service.contact().list().execute()
+        contact = self.service.contacts().list().execute()
         contact_list = []
         for c in contact['items']:
             contact_list.append(Contact(json_data=c))
         return contact_list
+
+    def clear_contacts(self):
+        for contact in self.list_contacts():
+            self.delete_contact(contact.id)
+
+    def delete_contact(self, id):
+        return self.service.contacts().delete(id=id).execute()
+
+    # Subscription handler
+    def subscribe(self, callback_url, subscription_type="all", user_token=None, verify_token=None, ):
+        """
+        Creates a new subscription to user actions or location.
+        @param callback_url: the url Google will POST the subscription updates to. (HTTP required) You can then use
+        Mirror.parse_notification on the update.
+        @param subscription_type: Type of actions to list for. One of "all", "share", "reply", "delete", "custom",
+        "location"
+        @param user_token: Unique user token for app. Can be basically anything.
+        @param verify_token: Unique verification token to ensure posts are coming from Google.
+        @return: JSON from Google in response to the subscription.
+        """
+        subscription_to_operation = {
+            "share": "UPDATE",
+            "reply": "INSERT",
+            "delete": "DELETE",
+            "custom": "UPDATE",
+            "all": None,
+            "location": "UPDATE",
+        }
+        if subscription_type not in ["all", "share", "reply", "delete", "custom", "location"]:
+            raise Exception('Subscription type must be one of ["all", "share", "reply", "delete", "custom", "location"] ')
+        # build subscription dict to send to Google
+        subscription = {}
+        if subscription_type == "location":
+            subscription['collection'] = "locations"
+        else:
+            subscription['collection'] = "timeline"
+        subscription['operation'] = subscription_to_operation[subscription_type]
+        if user_token:
+            subscription['userToken'] = user_token
+        if verify_token:
+            subscription['verifyToken'] = verify_token
+        subscription['callbackUrl'] = callback_url
+
+        return self.service.subscriptions().insert(body=subscription).execute()
+
+    def unsubscribe(self, collection="timeline"):
+        if collection not in ["timeline", "locations"]:
+            raise Exception('Collection must be one of ["timeline", "locations"].')
+        return self.service.subscriptions().delete(collection).execute()
+
+    def list_subscriptions(self):
+        return self.service.subscriptions().list().execute().get('items', [])
+
+    def parse_notification(self, request_body, subscription_object=None):
+        """Parse a request body into a notification dict.
+        Params:
+          request_body: The notification payload sent by the Mirror API as a string.
+          subscription_object: Allows for overriding subscription objects to have built in handling.
+        Returns:
+          Dict representing the notification payload.
+        """
+        notification = json.load(request_body)
+        if subscription_object:
+            sub = subscription_object()
+        else:
+            sub = SubscriptionEvent()
+        sub.parse(notification, self)
+        return sub
 
     def _get_service(self, credentials):
         """
@@ -121,8 +196,15 @@ class Mirror(object):
         http = httplib2.Http()
         http = credentials.authorize(http)
         service = build('mirror', 'v1', http=http)
+        self.service = service
         return service
 
+    def get_service_from_token(self, access_token, client_secrets_filename=None):
+        client_id, client_secret = self._get_client_secrets(client_secrets_filename)
+        credentials = OAuth2Credentials(access_token=access_token, client_id=client_id, client_secret=client_secret,
+                                        refresh_token=None, token_expiry=None, token_uri=None, user_agent=None)
+        return self._get_service(credentials)
+    
     def _get_client_secrets(self, filename=None):
         """
         Gets client secrets from the provided filename.
@@ -170,17 +252,99 @@ class Mirror(object):
         Scope is a list of scopes required for this oauth key. Defaults to
         """
         client_id, client_secret = self._get_client_secrets()
+
         if redirect_uri is None:
-            redirect_uri = 'https://localhost:8080'
+            redirect_uri = 'https://localhost:8000'
+        print "redir_uri", redirect_uri
         flow = OAuth2WebServerFlow(client_id=client_id,
                                client_secret=client_secret,
                                scope=self.scopes,
-                               redirect_uri=redirect_uri)
+                               redirect_uri=redirect_uri,
+                               access_type='offline')
+        print flow.redirect_uri
         return flow
-
 
     def _get_storage(self):
         return Storage(CREDENTIAL_STORAGE_FILE)
+
+class SubscriptionEvent(object):
+    def parse(self, notification, mirror):
+        """
+
+        @param notification: dict parsed from JSON from Google POST.
+        @param mirror: a Mirror object so the object can preemptively get Timeline and Location objects.
+        @return: event_type: The parsed event type, also saved to self.event_type. The rest of the parsed information
+        will be saved to object attributes, depending on type.
+        SHARE and REPLY will a timeline attribute that is a Timeline object.
+        DELETE will have a timeline_id attribute which is the deleted card's id.
+        CUSTOM will have a actions attribute that is a dict of the custom userActions the user did and
+        a menu_item attribute that is the id for a TimelineMenuItem. It is up to you to find that TimelineMenuItem.
+        Location updates will have a location attribute that is a Location object representing the user's latest
+        location.
+        """
+        self._mirror = mirror
+        try:
+            self.item_id = notification["itemId"]
+            self.operation = notification["operation"]
+            self.user_token = notification["userToken"]
+            if 'verifyToken' in notification:
+                self.verify_token = notification["verifyToken"]
+            else:
+                # No verification token in custom type?
+                self.verify_token = None
+            self.verify_token(self.verify_token)
+            # Dispatch to individual type handlers based on action type
+            if notification["collection"] == "locations":
+                self.event_type = "locations"
+                self._location_update(notification)
+            notification_type = notification["userActions"]["type"]
+
+            if notification_type == 'SHARE':
+                self.event_type = 'share'
+                self._share(notification)
+            elif notification_type == 'REPLY':
+                self.event_type = "reply"
+                self._reply(notification)
+            elif notification_type == 'DELETE':
+                self.event_type = "delete"
+                self._delete(notification)
+            elif notification_type == 'CUSTOM':
+                self.event_type = "custom"
+                self._custom(notification)
+            else:
+                raise Exception("Unknown notification type from Google: {0}".format(notification_type))
+            return self.event_type
+        except KeyError as e:
+            raise Exception("Malformed subscription message from Google.")
+
+    def verify(self, verify_token):
+        """
+        Override this if you want built in verification of all steps. Raise an exception if it does not verify.
+        """
+        return
+
+    def _location_update(self, notification):
+        raise NotImplementedError()
+
+    def _share(self, notification):
+        self.timeline = self._mirror.get_timeline(notification['itemId'])
+
+    def _reply(self, notification):
+        self.timeline = self._mirror.get_timeline(notification['itemId'])
+
+    def _delete(self, notification):
+        """
+        Really nothing to do here. We could verify maybe?
+        """
+        return
+
+    def _custom(self, notification):
+        # self.menu_item = self._mirror.
+        self.menu_item = notification['itemId']
+        self.actions = notification['userActions']
+        # Don't need type, already saved.
+        del(self.actions['type'])
+
 
 class Timeline(object):
     attachment = None
@@ -264,8 +428,9 @@ class TimelineMenuItem(object):
 class Contact(object):
     """
     Represents something users can share to.
+    Requires either display_name or json_data.
     """
-    def __init__(self, display_name, id=None, image_urls=[], type="INDIVIDUAL", accept_types = [], phone_number=None, priority=1, json_data=None):
+    def __init__(self, display_name=None, id=None, image_urls=[], type="INDIVIDUAL", accept_types = [], phone_number=None, priority=1, json_data=None):
         if json_data is not None:
             for k, v in json_data.items():
                 setattr(self, k, v)
@@ -275,9 +440,11 @@ class Contact(object):
         self.display_name = display_name
         if id is None:
             self.id = display_name.replace(' ', '_')
+        else:
+            self.id = id
         if image_urls == []:
             raise Exception("Contacts must have image urls.")
-        if len(image_urls) > 8:
+        elif len(image_urls) > 8:
             raise Exception("Contacts cannot have more than 8 image URLs.")
         self.image_urls = image_urls
         if type not in ("INDIVIDUAL", "GROUP"):
@@ -300,7 +467,14 @@ class Contact(object):
             body['phoneNumber'] = self.phone_number
         if self.priority:
             body['priority'] = self.priority
+        print "body", body
         return body
+
+
+
+
+
+
 
 
 # class TimelineAttachment(object):
@@ -310,3 +484,7 @@ class Contact(object):
 #         self.filename = filename
 #         media = open(filename).read()
 #         self.media_body = MediaIoBaseUpload(io.BytesIO(media), mimetype=content_type, resumable=True)
+
+if __name__ == '__main__':
+    mirror = Mirror()
+    mirror.get_my_oauth()
