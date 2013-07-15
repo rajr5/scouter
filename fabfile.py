@@ -30,8 +30,7 @@ def django_functions(path, settings):
 #            run('pip install -r ' + os.path.join(path, 'production_requirements.txt'))
             run('python manage.py syncdb --settings={0}'.format(settings))
             run('python manage.py migrate --noinput') # if you use south
-            run('python manage.py collectstatic -c --noinput --settings={0}'.format(settings))
-
+            run('python manage.py collectstatic  --noinput --settings={0}'.format(settings))
 
 def update_permissions(path):
     with cd(path):
@@ -59,6 +58,10 @@ def deploy_server_files(site):
     remote_filename = "/etc/init/{0}.conf".format(site)
     # put("production/init", remote_filename, use_sudo=True)
     sudo("chmod +x {0}".format(remote_filename))
+
+def create_db():
+    run("""echo "create database $DB_NAME; grant all privileges on $DB_NAME.* to '$DB_USER'@'localhost' identified by '$DB_PASSWORD' " > db.sql""")
+    sudo("mysql -u root -p$(cat /root/mysql) < db.sql" )
 
 def deploy():
     """ Deploy Django Project.
