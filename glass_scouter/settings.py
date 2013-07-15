@@ -200,3 +200,8 @@ LOGGING = {
         },
     }
 }
+try:
+    from glass_scouter.production_settings import *
+except Exception as e:
+    print e
+    pass

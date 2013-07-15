@@ -71,7 +71,7 @@ def deploy():
     mkdirs(path)
     update_django_project(path, branch='master')
     update_permissions(path)
-    django_functions(path, settings='{0}.settings'.format(env.project))
+    django_functions(path, settings='glass_scouter.settings'.format(env.project))
     restart_webserver(service=env.project)
 
 
