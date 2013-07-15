@@ -41,7 +41,7 @@ def _register_glass_app(mirror, id):
     mirror.post_contact(contact)
     for contact in mirror.list_contacts():
         print "contact", contact.id
-    mirror.subscribe(callback_url='https://scouter.servercobra.com/mirror/subscription/reply/', subscription_type="reply", user_token=id)
+    mirror.subscribe(callback_url='https://scouteronglass.com/mirror/subscription/reply/', subscription_type="reply", user_token=id)
 
 
 @login_required
