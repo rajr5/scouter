@@ -1,7 +1,35 @@
 # Django settings for glass_scouter project.
+import os
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+env = os.environ.get('ENV', 'local')
+
+if env == 'production':
+    DEBUG = False
+    TEMPLATE_DEBUG = DEBUG
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+            'NAME': 'scouter',                      # Or path to database file if using sqlite3.
+            'USER': 'scouter',                      # Not used with sqlite3.
+            'PASSWORD': 'password',                  # Not used with sqlite3.
+            'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+            'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+        }
+    }
+elif env == 'local':
+    DEBUG = True
+    TEMPLATE_DEBUG = DEBUG
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+            'NAME': os.environ.get('DB_NAME'),                      # Or path to database file if using sqlite3.
+            'USER': os.environ.get('DB_USER'),                      # Not used with sqlite3.
+            'PASSWORD': os.environ.get('DB_PASSWORD'),                  # Not used with sqlite3.
+            'HOST': os.environ.get('DB_HOST'),                      # Set to empty string for localhost. Not used with sqlite3.
+            'PORT': os.environ.get('DB_PORT'),                      # Set to empty string for default. Not used with sqlite3.
+        }
+    }
+
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -9,16 +37,8 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'scouter',                      # Or path to database file if using sqlite3.
-        'USER': 'scouter',                      # Not used with sqlite3.
-        'PASSWORD': 'password',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-    }
-}
+
+
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
