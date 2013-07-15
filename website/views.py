@@ -36,7 +36,7 @@ def _register_glass_app(mirror, id):
     """
     Create a Contact object and add it to the user's Glass. Then subscribe to notifications from that contact.
     """
-    contact = Contact(display_name="Scouter", id=id, image_urls=['http://scouter.servercobra.com/static/img/glass_display.png'],
+    contact = Contact(display_name="Scouter", id=id, image_urls=['https://scouteronglass.com/static/img/logo_square.png'],
                       type="INDIVIDUAL", accept_types=["image/jpeg", "image/png"], priority=1)
     mirror.post_contact(contact)
     for contact in mirror.list_contacts():
