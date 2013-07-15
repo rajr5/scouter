@@ -16,7 +16,7 @@ if env == 'production':
             'PORT': os.environ.get('DB_PORT'),                      # Set to empty string for default. Not used with sqlite3.
         }
     }
-elif env == 'local':
+else:
     DEBUG = True
     TEMPLATE_DEBUG = DEBUG
     DATABASES = {
