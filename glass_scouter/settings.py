@@ -2,22 +2,9 @@
 import os
 
 env = os.environ.get('ENV', 'local')
-
+print env
 if env == 'production':
     DEBUG = False
-    TEMPLATE_DEBUG = DEBUG
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-            'NAME': 'scouter',                      # Or path to database file if using sqlite3.
-            'USER': 'scouter',                      # Not used with sqlite3.
-            'PASSWORD': 'password',                  # Not used with sqlite3.
-            'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-            'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-        }
-    }
-elif env == 'local':
-    DEBUG = True
     TEMPLATE_DEBUG = DEBUG
     DATABASES = {
         'default': {
@@ -27,6 +14,19 @@ elif env == 'local':
             'PASSWORD': os.environ.get('DB_PASSWORD'),                  # Not used with sqlite3.
             'HOST': os.environ.get('DB_HOST'),                      # Set to empty string for localhost. Not used with sqlite3.
             'PORT': os.environ.get('DB_PORT'),                      # Set to empty string for default. Not used with sqlite3.
+        }
+    }
+elif env == 'local':
+    DEBUG = True
+    TEMPLATE_DEBUG = DEBUG
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+            'NAME': 'scouter',                      # Or path to database file if using sqlite3.
+            'USER': 'scouter',                      # Not used with sqlite3.
+            'PASSWORD': 'password',                  # Not used with sqlite3.
+            'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+            'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
         }
     }
 
