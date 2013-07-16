@@ -12,9 +12,12 @@ from django.forms.models import model_to_dict
 from django.contrib.auth.models import User
 from allauth.socialaccount.models import SocialAccount, SocialToken
 from glass.mirror import Mirror, Timeline, Contact
+import logging
 
 
-# Create your views here.
+debug_logger = logging.getLogger('debugger')
+
+
 @login_required
 def homepage(request):
     print request.user.id
@@ -67,4 +70,7 @@ def _get_token(id):
     return token
 
 def subscription_reply(request):
-    pass
+    debug_logger.debug("Subscription reply")
+    debug_logger.debug(request.POST)
+
+    return HttpResponse
