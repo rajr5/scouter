@@ -14,7 +14,9 @@ from allauth.socialaccount.models import SocialAccount, SocialToken
 from glass.mirror import Mirror, Timeline, Contact
 import logging
 from django.views.decorators.csrf import csrf_exempt
-
+import json
+from scouter import scout
+import urllib
 
 debug_logger = logging.getLogger('debugger')
 
@@ -77,5 +79,18 @@ def subscription_reply(request):
     debug_logger.debug(request.POST)
     debug_logger.debug(request.META)
     debug_logger.debug(request.body)
-
-    return HttpResponse
+    # Get user id
+    post = json.loads(request.body)
+    user_id = post['userToken']
+    token = _get_token(user_id)
+    if token is not None:
+        mirror = Mirror()
+        service = mirror.get_service_from_token(token.token)
+    else:
+        return HttpResponseBadRequest("Need valid userToken")
+    item = mirror.parse_notification(request.body)
+    timeline_item = item.timeline
+    attachment = mirror.get_timeline_attachment(timeline_item)
+    power_levels = scout(attachment)
+    print power_levels
+    return HttpResponse('OK')

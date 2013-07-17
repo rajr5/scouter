@@ -101,6 +101,11 @@ class Mirror(object):
     def delete_timeline(self, id):
         return self.service.timeline().delete(id=id).execute()
 
+    def get_timeline_attachment(self, timeline_item):
+        response, content = self.http.request('/mirror/v1/timeline/{itemId}/attachments/{attachmentId}'.format(
+            {'itemId': timeline_item.id, 'attachmentId': timeline_item.attachment}))
+        return content
+
     def post_contact(self, contact):
         """
         Posts a contact/service that the user will be able to share with
@@ -195,6 +200,7 @@ class Mirror(object):
             raise Exception("Invalid credentials")
         http = httplib2.Http()
         http = credentials.authorize(http)
+        self.http = http
         service = build('mirror', 'v1', http=http)
         self.service = service
         return service
