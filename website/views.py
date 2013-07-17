@@ -72,5 +72,7 @@ def _get_token(id):
 def subscription_reply(request):
     debug_logger.debug("Subscription reply")
     debug_logger.debug(request.POST)
+    debug_logger.debug(request.META)
+    debug_logger.debug(request.body)
 
     return HttpResponse
