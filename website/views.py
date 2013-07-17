@@ -13,6 +13,7 @@ from django.contrib.auth.models import User
 from allauth.socialaccount.models import SocialAccount, SocialToken
 from glass.mirror import Mirror, Timeline, Contact
 import logging
+from django.views.decorators.csrf import csrf_exempt
 
 
 debug_logger = logging.getLogger('debugger')
@@ -69,6 +70,8 @@ def _get_token(id):
     token = SocialToken.objects.get(account=account.id)
     return token
 
+
+@csrf_exempt
 def subscription_reply(request):
     debug_logger.debug("Subscription reply")
     debug_logger.debug(request.POST)
