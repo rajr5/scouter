@@ -68,6 +68,7 @@ def auth_return(request):
     pass
 
 def _get_token(id):
+    # print "token id", id
     account = SocialAccount.objects.get(user=id)
     token = SocialToken.objects.get(account=account.id)
     return token
@@ -76,21 +77,36 @@ def _get_token(id):
 @csrf_exempt
 def subscription_reply(request):
     debug_logger.debug("Subscription reply")
-    debug_logger.debug(request.POST)
-    debug_logger.debug(request.META)
-    debug_logger.debug(request.body)
+    # debug_logger.debug(request.POST)
+    # debug_logger.debug(request.META)
+    # debug_logger.debug(request.body)
     # Get user id
+    # print "Req body", request.body
+    print request.POST
+    # try:
     post = json.loads(request.body)
+    # except Exception:
+    #     post = dict(request.POST)
+    print "post", post.items()
     user_id = post['userToken']
-    token = _get_token(user_id)
+    user = User.objects.get(id=user_id)
+    print "token", user, user.id, SocialAccount.objects.all()[0].user.id
+    token = _get_token(user.id)
+
     if token is not None:
         mirror = Mirror()
         service = mirror.get_service_from_token(token.token)
     else:
         return HttpResponseBadRequest("Need valid userToken")
+    print "list timeline", mirror.list_timeline()[0]
     item = mirror.parse_notification(request.body)
     timeline_item = item.timeline
+    print "TA", timeline_item.attachments
     attachment = mirror.get_timeline_attachment(timeline_item)
-    power_levels = scout(attachment)
-    print power_levels
+    print "attach", type(attachment), attachment
+    with open('image.jpg', 'w') as f:
+        f.write(attachment)
+    print "Attachment", attachment
+    power_levels = scout('image.jpg')
+    print "Power levels", power_levels
     return HttpResponse('OK')

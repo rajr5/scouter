@@ -123,6 +123,10 @@ def scout(image_in):
     Returns an array of tuples in the form (filename, power level)
     """
     print ">>> Loading image..."
+    # Save it, then read it in. What a pain.
+    # filename = '%030x' % random.randrange(16**30)
+    # with open('/tmp/{0}.jpg'.format(filename), 'w') as f:
+    #     f.write(image_in)
     font_color = (68,205,228)
     img_color = cv2.imread(image_in)
     img_gray = cv2.cvtColor(img_color, cv.CV_RGB2GRAY)

@@ -92,7 +92,14 @@ class Mirror(object):
         """
         Returns a single timeline object
         """
-        return Timeline(json_data=self.service.timeline().get(id=id).execute())
+        print "timeline id", id
+        ##
+        print "service", self.service
+        print self.service.timeline()
+        print self.service.timeline().list().execute()
+        ##
+        timeline_json = self.service.timeline().get(id=id).execute()
+        return Timeline(json_data=timeline_json)
 
     def clear_timeline(self):
         for timeline in self.list_timeline():
@@ -102,8 +109,11 @@ class Mirror(object):
         return self.service.timeline().delete(id=id).execute()
 
     def get_timeline_attachment(self, timeline_item):
-        response, content = self.http.request('/mirror/v1/timeline/{itemId}/attachments/{attachmentId}'.format(
-            {'itemId': timeline_item.id, 'attachmentId': timeline_item.attachment}))
+        print "attachment id", timeline_item.attachment
+        args = {'itemId': timeline_item.id, 'attachmentId': timeline_item.attachments}
+        # response, content = self.http.request('https://www.googleapis.com/mirror/v1/timeline/{itemId}/attachments/{attachmentId}'.format(**args))
+        response, content = self.http.request(timeline_item.attachment_url)
+        # timeline_item.attachment = content
         return content
 
     def post_contact(self, contact):
@@ -184,7 +194,7 @@ class Mirror(object):
         Returns:
           Dict representing the notification payload.
         """
-        notification = json.load(request_body)
+        notification = json.loads(request_body)
         if subscription_object:
             sub = subscription_object()
         else:
@@ -298,12 +308,12 @@ class SubscriptionEvent(object):
             else:
                 # No verification token in custom type?
                 self.verify_token = None
-            self.verify_token(self.verify_token)
+            self.verify(self.verify_token)
             # Dispatch to individual type handlers based on action type
             if notification["collection"] == "locations":
                 self.event_type = "locations"
                 self._location_update(notification)
-            notification_type = notification["userActions"]["type"]
+            notification_type = notification["userActions"][0]["type"]
 
             if notification_type == 'SHARE':
                 self.event_type = 'share'
@@ -333,6 +343,7 @@ class SubscriptionEvent(object):
         raise NotImplementedError()
 
     def _share(self, notification):
+        print "notification", notification['itemId']
         self.timeline = self._mirror.get_timeline(notification['itemId'])
 
     def _reply(self, notification):
@@ -364,7 +375,12 @@ class Timeline(object):
     def __init__(self, text=None, html=None, json_data=None, notify=False, menu_items=None):
         if json_data is not None:
             for k, v in json_data.items():
-                # print "Setting timeline val", k, v
+                if k == 'attachments':
+                    for a in v:
+                        print "A", a
+                        if 'contentUrl' in a:
+                            self.attachment_url = a['contentUrl']
+                print "Setting timeline val", k, v
                 setattr(self, k, v)
             return
         if text:
@@ -404,12 +420,8 @@ class Timeline(object):
         """
 
     def __str__(self):
-        if self.title:
-            return self.title
-        elif self.text:
-            return self.text[0:80]
-        else:
-            return self.html
+        return str(self.id)
+
 
 class TimelineMenuItem(object):
     action = None
