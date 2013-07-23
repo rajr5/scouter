@@ -77,16 +77,17 @@ def _get_token(id):
 @csrf_exempt
 def subscription_reply(request):
     debug_logger.debug("Subscription reply")
-    # debug_logger.debug(request.POST)
-    # debug_logger.debug(request.META)
-    # debug_logger.debug(request.body)
+    debug_logger.debug(request.POST)
+    debug_logger.debug(request.META)
+    debug_logger.debug(request.body)
     # Get user id
     # print "Req body", request.body
     print request.POST
-    # try:
-    post = json.loads(request.body)
-    # except Exception:
-    #     post = dict(request.POST)
+    try:
+        post = json.loads(request.body)
+    except Exception:
+        debug_logger.exception("Couldn't load request.body")
+        post = dict(request.POST)
     print "post", post.items()
     user_id = post['userToken']
     user = User.objects.get(id=user_id)
