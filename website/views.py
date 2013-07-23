@@ -112,7 +112,11 @@ def subscription_reply(request):
     #print "Attachment", attachment
     cards = scout('image.jpg')
     #print "Power levels", cards
-    timeline = _create_timelines(cards, mirror, timeline_item)
+    try:
+        timeline = _create_timelines(cards, mirror, timeline_item)
+    except Exception:
+        debug_logger.exception("Could not create the timeline card.")
+        raise
     mirror.update_timeline(timeline)
     return HttpResponse('OK')
 
