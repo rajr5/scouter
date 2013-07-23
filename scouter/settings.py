@@ -170,6 +170,7 @@ INSTALLED_APPS = (
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'south',
+    'raven.contrib.django.raven_compat',
 )
 
 SOCIALACCOUNT_PROVIDERS = \
