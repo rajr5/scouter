@@ -21,9 +21,9 @@ class TestContactReply(unittest.TestCase):
         c = Client()
         json_data = """{
           "collection": "timeline",
-          "itemId": "39c0f39c-749d-4dfd-b547-7a2ed0d635c6",
+          "itemId": "980722d5-3204-40d1-a4a9-8420e9754062",
           "operation": "INSERT",
-          "userToken": "6",
+          "userToken": "8",
           "userActions": [
             {
               "type": "SHARE"

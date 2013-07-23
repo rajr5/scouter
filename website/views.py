@@ -90,23 +90,55 @@ def subscription_reply(request):
     print "post", post.items()
     user_id = post['userToken']
     user = User.objects.get(id=user_id)
-    print "token", user, user.id, SocialAccount.objects.all()[0].user.id
+    print "token", user, "userid", user.id, "socialaccountid", SocialAccount.objects.all()[0].user.id
     token = _get_token(user.id)
 
     if token is not None:
         mirror = Mirror()
         service = mirror.get_service_from_token(token.token)
+        for m in mirror.list_timeline():
+            print m.id
     else:
         return HttpResponseBadRequest("Need valid userToken")
-    print "list timeline", mirror.list_timeline()[0]
+    #print "list timeline", mirror.list_timeline()[0]
     item = mirror.parse_notification(request.body)
     timeline_item = item.timeline
-    print "TA", timeline_item.attachments
+    #print "TA", timeline_item.attachments
     attachment = mirror.get_timeline_attachment(timeline_item)
-    print "attach", type(attachment), attachment
+    #print "attach", type(attachment), attachment
     with open('image.jpg', 'w') as f:
         f.write(attachment)
-    print "Attachment", attachment
-    power_levels = scout('image.jpg')
-    print "Power levels", power_levels
+    #print "Attachment", attachment
+    cards = scout('image.jpg')
+    #print "Power levels", cards
+    timeline = _create_timelines(cards, mirror, timeline_item)
+    mirror.update_timeline(timeline)
     return HttpResponse('OK')
+
+def _create_timelines(cards, mirror, timeline_item):
+    """
+    Take the faces and power levels in cards, and modify timeline_item using mirror to be a bundle of power level
+    timeline cards.
+    """
+    card_template = """
+    <article>
+        <figure>
+            <img src="attachment:0">>
+        </figure>
+        <section>
+            <h1 style="color:yellow">Power Level:</h1>
+            <h1 style="color:red">{power_level}</h1>
+        </section>
+    </article>
+    """
+    if len(cards) == 0:
+        pass
+    if len(cards) > 1:
+        for card in cards[1:]:
+            # Create a new timeline card for each of the other cards, adding them to a bundle.
+            pass
+    template_data = {'img': '', 'power_level':'none'}
+    timeline_item.html = card_template.format(**template_data)
+    return timeline_item
+
+

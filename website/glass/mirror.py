@@ -78,6 +78,12 @@ class Mirror(object):
             return self.service.timeline().insert(body=timeline.timeline_body()).execute()
             # return self.service.timeline().insert(body=timeline.timeline_body()).execute()
 
+    def update_timeline(self, timeline):
+        """
+        Updates an existing timeline object in place.
+        """
+        return self.service.timeline().update(id=timeline.id, body=timeline.timeline_body()).execute()
+
     def list_timeline(self):
         """
         Returns the list of Timeline objects.
@@ -369,6 +375,7 @@ class Timeline(object):
     html = None
     pinned = False
     title = None
+    notify = None
 
     menu_items = []
 
