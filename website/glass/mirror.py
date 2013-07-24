@@ -82,7 +82,10 @@ class Mirror(object):
         """
         Updates an existing timeline object in place.
         """
-        return self.service.timeline().update(id=timeline.id, body=timeline.timeline_body()).execute()
+        if timeline.attachment:
+            return self.service.timeline().update(id=timeline.id, body=timeline.timeline_body(), media_body=timeline.attachment).execute()
+        else:
+            return self.service.timeline().update(id=timeline.id, body=timeline.timeline_body()).execute()
 
     def list_timeline(self):
         """
