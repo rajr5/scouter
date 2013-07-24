@@ -21,6 +21,17 @@ if env == 'production':
     #         'PORT': os.environ.get('DB_PORT'),                      # Set to empty string for default. Not used with sqlite3.
     #     }
     # }
+    SOCIALACCOUNT_PROVIDERS = \
+    { 'google':
+        { 'SCOPE': ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/glass.timeline'],
+          'AUTH_PARAMS': {'access_type': 'offline',
+             'redirect_uri': 'https://scouteronglass.com/accounts/google/login/callback/'
+
+             },
+          'METHOD': 'oauth2'
+         }
+    }
+
 else:
     DEBUG = True
     TEMPLATE_DEBUG = DEBUG
@@ -33,6 +44,12 @@ else:
             'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
             'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
         }
+    }
+    SOCIALACCOUNT_PROVIDERS = \
+    { 'google':
+        { 'SCOPE': ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/glass.timeline'],
+          'AUTH_PARAMS': {'access_type': 'offline'}
+         }
     }
 
 
@@ -173,12 +190,7 @@ INSTALLED_APPS = (
     'raven.contrib.django.raven_compat',
 )
 
-SOCIALACCOUNT_PROVIDERS = \
-    { 'google':
-        { 'SCOPE': ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/glass.timeline'],
-          'AUTH_PARAMS': {'access_type': 'offline'}
-         }
-    }
+
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
