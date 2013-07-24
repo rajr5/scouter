@@ -25,7 +25,7 @@ if env == 'production':
     { 'google':
         { 'SCOPE': ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/glass.timeline'],
           'AUTH_PARAMS': {'access_type': 'offline',
-             'redirect_uri': 'https://scouteronglass.com/accounts/google/login/callback/'
+             # 'redirect_uri': 'https://scouteronglass.com/accounts/google/login/callback/'
 
              },
           'METHOD': 'oauth2'

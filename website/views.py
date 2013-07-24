@@ -128,7 +128,7 @@ def _create_timelines(cards, mirror, timeline_item):
     card_template = """
     <article>
         <figure>
-            <img src="attachment:0">>
+            <img src="attachment:1">>
         </figure>
         <section>
             <h1 style="color:yellow">Power Level:</h1>
@@ -142,8 +142,10 @@ def _create_timelines(cards, mirror, timeline_item):
         for card in cards[1:]:
             # Create a new timeline card for each of the other cards, adding them to a bundle.
             pass
-    template_data = {'img': '', 'power_level':'none'}
+    template_data = {'power_level': cards[0][1]}
     timeline_item.html = card_template.format(**template_data)
+    img_file = '/tmp/{0}.jpg'.format(cards[0][0])
+    timeline_item.add_attachment(img_file, 'image/jpg')
     return timeline_item
 
 
