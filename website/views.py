@@ -128,7 +128,7 @@ def _create_timelines(cards, mirror, timeline_item):
     card_template = """
     <article>
         <figure>
-            <img src="attachment:0">
+            <img src="attachment:1">
         </figure>
         <section>
             <h1 style="color:yellow">Power Level:</h1>
