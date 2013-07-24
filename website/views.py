@@ -16,6 +16,8 @@ import logging
 from django.views.decorators.csrf import csrf_exempt
 import json
 from scouter import scout
+import io
+from apiclient.http import MediaIoBaseUpload
 import urllib
 
 debug_logger = logging.getLogger('debugger')
@@ -145,7 +147,8 @@ def _create_timelines(cards, mirror, timeline_item):
     template_data = {'power_level': cards[0][1]}
     timeline_item.html = card_template.format(**template_data)
     img_file = '/tmp/{0}.jpg'.format(cards[0][0])
-    timeline_item.add_attachment(img_file, 'image/jpg')
+    mirror.insert_timeline_attachement(timeline_item, img_file)
+    # timeline_item.add_attachment(img_file, 'image/jpg')
     return timeline_item
 
 

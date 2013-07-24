@@ -125,6 +125,13 @@ class Mirror(object):
         # timeline_item.attachment = content
         return content
 
+    def insert_timeline_attachement(self, timeline_item, filename):
+        img = open(filename, 'r').read()
+        media_body = MediaIoBaseUpload(
+            io.BytesIO(img), mimetype="image/jpg", resumable=True)
+        self.service.timeline().attachments().insert(
+        itemId=timeline_item.id, media_body=media_body).execute()
+
     def post_contact(self, contact):
         """
         Posts a contact/service that the user will be able to share with
