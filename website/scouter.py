@@ -111,7 +111,6 @@ def slice_face(rect, img):
     im.save('/tmp/{0}.jpg'.format(filename), "JPEG")
     return filename
 
-
 def create_card(face, power):
     """
     Creates the HTML and meta data for a timeline Glass card from a face and a power level.
