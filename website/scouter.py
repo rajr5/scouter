@@ -4,6 +4,7 @@ import cv2.cv as cv
 import math
 import random
 import io
+import Image
 # from apiclient.http import MediaIoBaseUpload
 
 """
@@ -104,6 +105,10 @@ def slice_face(rect, img):
     filename = '%030x' % random.randrange(16**30)
     print filename
     cv2.imwrite('/tmp/{0}.jpg'.format(filename) ,img[rect[1]-extra_crop:rect[3]+extra_crop, rect[0]:rect[2]])
+    size= 240, 360
+    im = Image.open('/tmp/{0}.jpg'.format(filename))
+    im.thumbnail(size, Image.ANTIALIAS)
+    im.save('/tmp/{0}.jpg'.format(filename), "JPEG")
     return filename
 
 
