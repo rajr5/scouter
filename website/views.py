@@ -138,9 +138,20 @@ def _create_timelines(cards, mirror, timeline_item):
         </section>
     </article>
     """
+    fail_template = """
+    <article>
+        <section>
+            <h1 style="color:yellow;text-align:center">No lifeforms</h1>
+            <h1 style="color:yellow;text-align:center">Detected</h1>
+        </section>
+    </article>
+    """
     if len(cards) == 0:
-        pass
-    if len(cards) > 1:
+        # No faces, replace old image with this one.
+        timeline_item.html = fail_template
+        mirror.insert_timeline_attachement(timeline_item)
+        return timeline_item
+    elif len(cards) > 1:
         for card in cards[1:]:
             # Create a new timeline card for each of the other cards, adding them to a bundle.
             pass
