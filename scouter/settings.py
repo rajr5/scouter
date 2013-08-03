@@ -48,7 +48,8 @@ else:
     SOCIALACCOUNT_PROVIDERS = \
     { 'google':
         { 'SCOPE': ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/glass.timeline'],
-          'AUTH_PARAMS': {'access_type': 'offline'}
+          'AUTH_PARAMS': {'access_type': 'offline',
+                          'approval_prompt': 'force'}
          }
     }
 

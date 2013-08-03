@@ -56,7 +56,7 @@ def _register_glass_app(mirror, id):
 def clear_contacts(request):
     token = _get_token(request.user.id)
     mirror = Mirror()
-    service = mirror.get_service_from_token(token.token)
+    service = mirror.get_service_from_token(token.token, refresh_token=token.token_secret)
     print "got service"
     mirror.clear_contacts()
     return HttpResponse("Clear!")

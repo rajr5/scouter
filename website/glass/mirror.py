@@ -231,10 +231,10 @@ class Mirror(object):
         self.service = service
         return service
 
-    def get_service_from_token(self, access_token, client_secrets_filename=None):
+    def get_service_from_token(self, access_token, client_secrets_filename=None, refresh_token=None):
         client_id, client_secret = self._get_client_secrets(client_secrets_filename)
         credentials = OAuth2Credentials(access_token=access_token, client_id=client_id, client_secret=client_secret,
-                                        refresh_token=None, token_expiry=None, token_uri=None, user_agent=None)
+                                        refresh_token=refresh_token, token_expiry=None, token_uri=None, user_agent=None)
         return self._get_service(credentials)
     
     def _get_client_secrets(self, filename=None):
