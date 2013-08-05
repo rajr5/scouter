@@ -22,4 +22,5 @@ urlpatterns += patterns('website.views',
     url(r'^auth_return/$', 'auth_return'),
     url(r'^clear_contacts/$', 'clear_contacts'),
     url(r'^mirror/subscription/reply/$', 'subscription_reply'),
+    url(r'^oauth/', include('website.urls'))
 )

@@ -23,7 +23,7 @@ class TestContactReply(unittest.TestCase):
           "collection": "timeline",
           "itemId": "980722d5-3204-40d1-a4a9-8420e9754062",
           "operation": "INSERT",
-          "userToken": "8",
+          "userToken": "9",
           "userActions": [
             {
               "type": "SHARE"

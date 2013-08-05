@@ -1,6 +1,6 @@
 from django.http import HttpResponseRedirect,HttpResponseBadRequest,HttpResponseNotFound, HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import logout
+# from django.contrib.auth import logout
 from django.shortcuts import render_to_response
 from django.core.exceptions import ObjectDoesNotExist
 from django.template import RequestContext
@@ -19,18 +19,25 @@ from scouter import scout
 import io
 from apiclient.http import MediaIoBaseUpload
 import urllib
+from glass import oauth_utils
+from django.contrib.auth import login, authenticate, logout
 
 debug_logger = logging.getLogger('debugger')
 
 
-@login_required
 def homepage(request):
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect(oauth_utils.get_auth_url(request, client_secrets_filename='/home/josh/src/scouter/client_secrets.json'))
     print request.user.id
+    try:
+        credentials = oauth_utils.get_credentials(request)
+    except Exception:
+        return logout(request)
     # try:
-    token = _get_token(request.user.id)
-    if token is not None:
+    # token = _get_token(request.user.id)
+    if credentials is not None:
         mirror = Mirror()
-        service = mirror.get_service_from_token(token.token)
+        service = mirror.get_service_from_token(credentials.access_token, refresh_token=credentials.refresh_token)
         # print "Token", token
         # timeline = Timeline(text="Hello Glass!")
         # mirror.post_timeline(timeline)
@@ -39,6 +46,9 @@ def homepage(request):
     #     print e
     #     print "No token for user id", request.user.id
     return render_to_response('home.html', context_instance=RequestContext(request))
+
+def oauth_redirect(request):
+    return oauth_utils.process_oauth_redirect(request)
 
 def _register_glass_app(mirror, id):
     """

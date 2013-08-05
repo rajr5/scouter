@@ -5,7 +5,7 @@ import sys
 PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 LOG_DIR = os.path.abspath(os.path.join(PROJECT_ROOT, 'logs_dev'))
 
-
+GOOGLE_SCOPE = ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/glass.timeline']
 env = os.environ.get('ENV', 'local')
 print env
 if env == 'production':
@@ -135,8 +135,8 @@ TEMPLATE_LOADERS = (
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.request",
     'django.contrib.auth.context_processors.auth',
-    "allauth.account.context_processors.account",
-    "allauth.socialaccount.context_processors.socialaccount",
+    # "allauth.account.context_processors.account",
+    # "allauth.socialaccount.context_processors.socialaccount",
 )
 
 
@@ -157,7 +157,7 @@ AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
 
     # `allauth` specific authentication methods, such as login by e-mail
-    "allauth.account.auth_backends.AuthenticationBackend",
+    # "allauth.account.auth_backends.AuthenticationBackend",
 )
 
 ROOT_URLCONF = 'scouter.urls'
@@ -183,10 +183,10 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
     'website',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
+    # 'allauth',
+    # 'allauth.account',
+    # 'allauth.socialaccount',
+    # 'allauth.socialaccount.providers.google',
     'south',
     'raven.contrib.django.raven_compat',
 )

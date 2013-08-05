@@ -10,6 +10,7 @@ import httplib2
 from apiclient.discovery import build
 import io
 from apiclient.http import MediaIoBaseUpload
+import datetime
 
 DEFAULT_SCOPE = [
     'https://www.googleapis.com/auth/glass.timeline',
@@ -91,7 +92,9 @@ class Mirror(object):
         """
         Returns the list of Timeline objects.
         """
+        print "list"
         timeline = self.service.timeline().list().execute()
+        print "after list"
         timeline_list = []
         for t in timeline['items']:
             timeline_list.append(Timeline(json_data=t))
@@ -226,6 +229,7 @@ class Mirror(object):
             raise Exception("Invalid credentials")
         http = httplib2.Http()
         http = credentials.authorize(http)
+        # http = credentials._refresh(http)
         self.http = http
         service = build('mirror', 'v1', http=http)
         self.service = service
@@ -234,7 +238,10 @@ class Mirror(object):
     def get_service_from_token(self, access_token, client_secrets_filename=None, refresh_token=None):
         client_id, client_secret = self._get_client_secrets(client_secrets_filename)
         credentials = OAuth2Credentials(access_token=access_token, client_id=client_id, client_secret=client_secret,
-                                        refresh_token=refresh_token, token_expiry=None, token_uri=None, user_agent=None)
+                                        refresh_token=refresh_token, token_expiry=datetime.datetime.now(), token_uri="https://accounts.google.com/o/oauth2/token", user_agent=None)
+        # print "auth"
+        # credentials.authorize()
+        # print "authed"
         return self._get_service(credentials)
     
     def _get_client_secrets(self, filename=None):
