@@ -34,8 +34,8 @@ def configure_xmpp_message(config_file='/etc/xmpp_credentials.ini', section=None
 
 def send_xmpp_message(msg):
     if env.xmpp_client is None:
-        env.xmpp_client = xmpp.Client(env.xmpp_auth['hostname'])
-        # env.xmpp_client = xmpp.Client(env.xmpp_auth['hostname'], debug=[])
+        # env.xmpp_client = xmpp.Client(env.xmpp_auth['hostname'])
+        env.xmpp_client = xmpp.Client(env.xmpp_auth['hostname'], debug=[])
         env.xmpp_client.connect()
         env.xmpp_client.auth(env.xmpp_auth['username'], env.xmpp_auth['password'])
         env.xmpp_client.sendInitPresence()
