@@ -48,7 +48,6 @@ pip-log.txt
 #Mr Developer
 .mr.developer.cfg
 
-img/
 share/
 client_secrets.json
 credentials.json
