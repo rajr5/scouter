@@ -31,7 +31,7 @@ if env == 'production':
           'METHOD': 'oauth2'
          }
     }
-    GOOGLE_REDIRECT_URI = 'https://scouteronglass/oauth/google/redirect/'
+    GOOGLE_REDIRECT_URI = 'https://scouteronglass.com/oauth/google/redirect/'
 
 else:
     DEBUG = True

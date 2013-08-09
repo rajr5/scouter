@@ -77,9 +77,9 @@ def radius_of_rectangle(rect):
 
 def power_level(rect):
     """
-    Figure out power level based on how much blonde hair is in the picture.
+    TODO Figure out power level based on how much blonde hair is in the picture.
     """
-    return "9001"
+    return random.randrange(1,30000)
 
 
 def write_text(img, rect, text, font_color):
@@ -120,6 +120,7 @@ def create_card(face, power):
     # media_body = MediaIoBaseUpload(
     #     io.BytesIO(face), mimetype="image/jpeg", resumable=True)
     # service.timeline().insert(body=timeline_item, media_body=media_body).execute()
+    pass
 
 
 def scout(image_in):
