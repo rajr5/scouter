@@ -29,6 +29,7 @@ client_secrets_filename = os.path.join(settings.PROJECT_ROOT, 'client_secrets.js
 
 
 def homepage(request):
+    debug_logger.debug("User id: {0}".format(request.user.id))
     if not request.user.is_authenticated():
         return HttpResponseRedirect(oauth_utils.get_auth_url(request, client_secrets_filename=client_secrets_filename, redirect_uri=settings.GOOGLE_REDIRECT_URI))
     print request.user.id
