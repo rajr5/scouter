@@ -85,6 +85,7 @@ def auth_return(request):
     pass
 
 def _get_credentials(id):
+    debug_logger.info("Get credentials for user: {0}".format(id))
     return GoogleCredential.objects.get(user=id)
 
 def _get_token(id):

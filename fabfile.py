@@ -4,6 +4,8 @@
 from fabric.api import *
 import os
 import time
+import xmpp
+import ConfigParser
 # import requests
 
 
@@ -12,6 +14,34 @@ env.remote_user = "scouteronglass"
 env.hosts = ["scouteronglass.com"]
 env.project = "scouter"
 env.password = open('fabric_pass.txt', 'r').read()
+env.xmpp_auth = {}
+env.xmpp_client = None
+
+def configure_xmpp_message(config_file='/etc/xmpp_credentials.ini', section=None):
+    config = ConfigParser.ConfigParser()
+    config.read(config_file)
+    if section is None:
+        section = env.project
+    if not config.has_section(section):
+        print "Could not find section {0} in config file: {1}".format(section, config_file)
+        return
+
+    env.xmpp_auth['username'] = config.get(section, 'username')
+    env.xmpp_auth['password'] = config.get(section, 'password')
+    env.xmpp_auth['hostname'] = config.get(section, 'hostname')
+    env.xmpp_auth['to'] = config.get(section, 'to')
+    print env.xmpp_auth
+
+def send_xmpp_message(msg):
+    if env.xmpp_client is None:
+        env.xmpp_client = xmpp.Client(env.xmpp_auth['hostname'])
+        # env.xmpp_client = xmpp.Client(env.xmpp_auth['hostname'], debug=[])
+        env.xmpp_client.connect()
+        env.xmpp_client.auth(env.xmpp_auth['username'], env.xmpp_auth['password'])
+        env.xmpp_client.sendInitPresence()
+    message = xmpp.Message(env.xmpp_auth['to'], msg)
+    message.setAttr('type', 'chat')
+    env.xmpp_client.send(message)
 
 
 def update_django_project(path, branch):
@@ -67,7 +97,8 @@ def deploy():
     """ Deploy Django Project.
     """
     path = '/home/{0}/{1}/'.format(env.remote_user, env.project)
-
+    configure_xmpp_message()
+    send_xmpp_message("Starting production deploy for {0}".format(env.project))
     #put_files(path)
     deploy_server_files(env.project)
     install_packages()
@@ -76,6 +107,7 @@ def deploy():
     update_permissions(path)
     django_functions(path, settings='scouter.settings'.format(env.project))
     restart_webserver(service=env.project)
+    send_xmpp_message("Production deploy successful for {0}!".format(env.project))
 
 
 def deploy_test():
@@ -84,6 +116,8 @@ def deploy_test():
     path = '/home/{0}/{1}_testing/'.format(env.remote_user, env.project)
 
     #put_files(path)
+    configure_xmpp_message()
+    send_xmpp_message("Starting testing deploy for {0}".format(env.project))
     deploy_server_files('{0}_test'.format(env.project))
     install_packages()
     mkdirs(path)
@@ -91,6 +125,7 @@ def deploy_test():
     django_functions(path, settings='{0}.testing_settings'.format(env.project))
     update_permissions(path)
     restart_webserver(service='{0}'.format(env.project))
+    send_xmpp_message("Testing deploy successful for {0}!".format(env.project))
 
 def logs(path='/home/{0}/{1}/'.format(env.remote_user, env.project)):
     sudo("tail -f {0}".format(os.path.join(path, 'logs/*')))
