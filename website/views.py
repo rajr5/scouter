@@ -113,8 +113,8 @@ def subscription_reply(request):
     print "post", post.items()
     user_id = post['userToken']
     user = User.objects.get(id=user_id)
-    print "token", user, "userid", user.id, "socialaccountid", SocialAccount.objects.all()[0].user.id
-    credentials = _get_credentials(id)
+    # print "token", user, "userid", user.id, "socialaccountid", SocialAccount.objects.all()[0].user.id
+    credentials = _get_credentials(user.id)
 
     if credentials is not None:
         mirror = Mirror()
