@@ -25,7 +25,8 @@ from django.contrib.auth import login, authenticate, logout
 import os
 
 debug_logger = logging.getLogger('debugger')
-client_secrets_filename = os.path.join(settings.PROJECT_DIR, 'client_secrets.json')
+client_secrets_filename = os.path.join(settings.PROJECT_ROOT, 'client_secrets.json')
+
 
 def homepage(request):
     if not request.user.is_authenticated():
