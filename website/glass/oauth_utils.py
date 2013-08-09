@@ -22,7 +22,7 @@ def process_oauth_redirect(request, post_auth_redirect='/', client_secrets_filen
     flow = _get_flow(client_secrets_filename=client_secrets_filename)
     print flow
     print request.REQUEST
-    cred = flow.step2_exchange(request.REQUEST['code'])
+    cred = flow.step2_exchange(request.REQUEST)
     if not request.user.is_authenticated():
         # Create a new user automagically.
         user = User()
