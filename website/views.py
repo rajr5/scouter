@@ -22,13 +22,14 @@ from apiclient.http import MediaIoBaseUpload
 import urllib
 from glass import oauth_utils
 from django.contrib.auth import login, authenticate, logout
+import os
 
 debug_logger = logging.getLogger('debugger')
-
+client_secrets_filename = os.path.join(settings.PROJECT_DIR, 'client_secrets.json')
 
 def homepage(request):
     if not request.user.is_authenticated():
-        return HttpResponseRedirect(oauth_utils.get_auth_url(request, client_secrets_filename='/home/josh/src/scouter/client_secrets.json'))
+        return HttpResponseRedirect(oauth_utils.get_auth_url(request, client_secrets_filename=client_secrets_filename))
     print request.user.id
     try:
         credentials = oauth_utils.get_credentials(request)
