@@ -235,10 +235,10 @@ class Mirror(object):
         self.service = service
         return service
 
-    def get_service_from_token(self, access_token, client_secrets_filename=None, refresh_token=None):
+    def get_service_from_token(self, access_token, token_expiry=None, client_secrets_filename=None, refresh_token=None):
         client_id, client_secret = self._get_client_secrets(client_secrets_filename)
         credentials = OAuth2Credentials(access_token=access_token, client_id=client_id, client_secret=client_secret,
-                                        refresh_token=refresh_token, token_expiry=datetime.datetime.now(), token_uri="https://accounts.google.com/o/oauth2/token", user_agent=None)
+                                        refresh_token=refresh_token, token_expiry=token_expiry, token_uri="https://accounts.google.com/o/oauth2/token", user_agent=None)
         # print "auth"
         # credentials.authorize()
         # print "authed"

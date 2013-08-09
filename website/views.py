@@ -30,7 +30,7 @@ client_secrets_filename = os.path.join(settings.PROJECT_ROOT, 'client_secrets.js
 
 def homepage(request):
     if not request.user.is_authenticated():
-        return HttpResponseRedirect(oauth_utils.get_auth_url(request, client_secrets_filename=client_secrets_filename))
+        return HttpResponseRedirect(oauth_utils.get_auth_url(request, client_secrets_filename=client_secrets_filename, redirect_uri=settings.GOOGLE_REDIRECT_URI))
     print request.user.id
     try:
         credentials = oauth_utils.get_credentials(request)
@@ -40,7 +40,7 @@ def homepage(request):
     # token = _get_token(request.user.id)
     if credentials is not None:
         mirror = Mirror()
-        service = mirror.get_service_from_token(credentials.access_token, refresh_token=credentials.refresh_token)
+        service = mirror.get_service_from_token(credentials.access_token, refresh_token=credentials.refresh_token, token_expiry=credentials.token_expiry)
         # print "Token", token
         # timeline = Timeline(text="Hello Glass!")
         # mirror.post_timeline(timeline)
@@ -57,12 +57,14 @@ def _register_glass_app(mirror, id):
     """
     Create a Contact object and add it to the user's Glass. Then subscribe to notifications from that contact.
     """
-    contact = Contact(display_name="Scouter", id=id, image_urls=['https://scouteronglass.com/static/img/logo_square.png'],
-                      type="INDIVIDUAL", accept_types=["image/jpeg", "image/png"], priority=1)
-    mirror.post_contact(contact)
-    for contact in mirror.list_contacts():
+    contacts = mirror.list_contacts()
+    for contact in contacts:
         print "contact", contact.id
-    mirror.subscribe(callback_url='https://scouteronglass.com/mirror/subscription/reply/', subscription_type="reply", user_token=id)
+    if len(contacts) == 0:
+        contact = Contact(display_name="Scouter", id=id, image_urls=['https://scouteronglass.com/static/img/logo_square.png'],
+                          type="INDIVIDUAL", accept_types=["image/jpeg", "image/png"], priority=1)
+        mirror.post_contact(contact)
+        mirror.subscribe(callback_url='https://scouteronglass.com/mirror/subscription/reply/', subscription_type="reply", user_token=id)
 
 
 @login_required
