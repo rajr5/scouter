@@ -60,7 +60,6 @@ class GoogleCredential(models.Model):
         credential.save()
         return credential
 
-
 class CredentialsAdmin(admin.ModelAdmin):
     pass
 

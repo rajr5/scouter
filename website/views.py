@@ -11,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.forms.models import model_to_dict
 from django.contrib.auth.models import User
 from allauth.socialaccount.models import SocialAccount, SocialToken
+from website.models import GoogleCredential
 from glass.mirror import Mirror, Timeline, Contact
 import logging
 from django.views.decorators.csrf import csrf_exempt
@@ -64,9 +65,9 @@ def _register_glass_app(mirror, id):
 
 @login_required
 def clear_contacts(request):
-    token = _get_token(request.user.id)
+    credentials = _get_credentials(request.user.id)
     mirror = Mirror()
-    service = mirror.get_service_from_token(token.token, refresh_token=token.token_secret)
+    service = mirror.get_service_from_token(credentials.access_token, refresh_token=credentials.client_secret)
     print "got service"
     mirror.clear_contacts()
     return HttpResponse("Clear!")
@@ -79,8 +80,12 @@ def callback(request):
 def auth_return(request):
     pass
 
+def _get_credentials(id):
+    return GoogleCredential.objects.get(user=id)
+
 def _get_token(id):
     # print "token id", id
+
     account = SocialAccount.objects.get(user=id)
     token = SocialToken.objects.get(account=account.id)
     return token
@@ -104,11 +109,11 @@ def subscription_reply(request):
     user_id = post['userToken']
     user = User.objects.get(id=user_id)
     print "token", user, "userid", user.id, "socialaccountid", SocialAccount.objects.all()[0].user.id
-    token = _get_token(user.id)
+    credentials = _get_credentials(id)
 
-    if token is not None:
+    if credentials is not None:
         mirror = Mirror()
-        service = mirror.get_service_from_token(token.token)
+        service = mirror.get_service_from_token(credentials.access_token)
         for m in mirror.list_timeline():
             print m.id
     else:
