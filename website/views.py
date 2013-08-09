@@ -51,7 +51,7 @@ def homepage(request):
     return render_to_response('home.html', context_instance=RequestContext(request))
 
 def oauth_redirect(request):
-    return oauth_utils.process_oauth_redirect(request)
+    return oauth_utils.process_oauth_redirect(request, client_secrets_filename=client_secrets_filename)
 
 def _register_glass_app(mirror, id):
     """

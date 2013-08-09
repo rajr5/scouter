@@ -16,10 +16,10 @@ def get_auth_url(request, redirect_uri='http://localhost:8000/oauth/google/redir
     # flow.params['state'] = xsrfutil.generate_token(settings.SECRET_KEY, request.user)
     return flow.step1_get_authorize_url()
 
-def process_oauth_redirect(request, post_auth_redirect='/'):
+def process_oauth_redirect(request, post_auth_redirect='/', client_secrets_filename=None):
     # if not xsrfutil.validate_token(settings.SECRET_KEY, request.REQUEST['state'], request.user):
         # return  HttpResponseBadRequest("State did not validate.")
-    flow = _get_flow(client_secrets_filename='/home/josh/src/scouter/client_secrets.json')
+    flow = _get_flow(client_secrets_filename=client_secrets_filename)
     print flow
     print request.REQUEST
     cred = flow.step2_exchange(request.REQUEST['code'])
