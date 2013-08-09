@@ -172,7 +172,7 @@ def _create_timelines(cards, mirror, timeline_item):
     if len(cards) == 0:
         # No faces, replace old image with this one.
         timeline_item.html = fail_template
-        mirror.insert_timeline_attachement(timeline_item)
+        mirror.update_timeline(timeline_item)
         return timeline_item
     elif len(cards) > 1:
         for card in cards[1:]:
