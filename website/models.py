@@ -16,6 +16,9 @@ from oauth2client.client import Credentials
 import datetime
 from oauth2client.client import OAuth2Credentials
 from django.utils.timezone import utc
+import logging
+
+logger = logging.getLogger("debugger")
 
 class GoogleCredential(models.Model):
     """
@@ -64,7 +67,7 @@ class GoogleCredential(models.Model):
 
     def needs_refresh(self):
         now = datetime.datetime.utcnow().replace(tzinfo=utc)
-        print "token expiry", self.token_expiry, "now", now, "needs refresh?", self.token_expiry < now
+        logger.debug("token expiry {0} now {1} needs refresh? {2}".format(self.token_expiry, now, self.token_expiry < now))
         return self.token_expiry < now
 
     def refresh(self, http, force=False):
@@ -72,13 +75,13 @@ class GoogleCredential(models.Model):
         if self.needs_refresh() or force:
             credentials = self.oauth2credentials()
             credentials.refresh(http)
-            print "refresh token", credentials.refresh_token
-            print "token expiry", credentials.token_expiry, "old", self.token_expiry
+            logger.debug("refresh token {0}".format(credentials.refresh_token))
+            logger.debug("token expiry {0} old {1}".format(credentials.token_expiry, self.token_expiry))
             self.refresh_token = credentials.refresh_token
             self.token_expiry = credentials.token_expiry
             self.save()
         else:
-            print "none"
+            logger.debug("Token refresh not needed")
 
     def oauth2credentials(self):
         kwargs = {

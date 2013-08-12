@@ -31,9 +31,12 @@ client_secrets_filename = os.path.join(settings.PROJECT_ROOT, 'client_secrets.js
 
 
 def homepage(request):
+    template_data = {}
     debug_logger.debug("User id: {0}".format(request.user.id))
     if not request.user.is_authenticated():
-        return HttpResponseRedirect(oauth_utils.get_auth_url(request, client_secrets_filename=client_secrets_filename, redirect_uri=settings.GOOGLE_REDIRECT_URI))
+        template_data['auth_url'] = oauth_utils.get_auth_url(request, client_secrets_filename=client_secrets_filename, redirect_uri=settings.GOOGLE_REDIRECT_URI)
+        return render_to_response('login.html', template_data, context_instance=RequestContext(request))
+        # return HttpResponseRedirect()
     print request.user.id
     mirror = _get_mirror(request.user.id)
     _register_glass_app(mirror, request.user.id)
@@ -53,7 +56,7 @@ def _get_mirror(user_id):
     mirror = Mirror.from_credentials(oauth_credentials)
     if google_credentials.needs_refresh():
         print "trying refresh", oauth_credentials.refresh_token
-    google_credentials.refresh(http=mirror.http, force=True)
+    google_credentials.refresh(http=mirror.http)
     return mirror
 
 
@@ -70,7 +73,11 @@ def _register_glass_app(mirror, id):
         print "contact", contact.id
     # if len(contacts) == 0:
     mirror.clear_contacts()
-    contact = Contact(display_name="Scouter", id=id, image_urls=['https://scouteronglass.com/static/img/contact_img.png'],
+    if settings.environment == "production":
+        display_name = "Scouter"
+    else:
+        display_name = "Scouter Dev"
+    contact = Contact(display_name=display_name, id=id, image_urls=['https://scouteronglass.com/static/img/contact_img.png'],
                       type="INDIVIDUAL", accept_types=["image/jpeg", "image/png"], priority=1)
     mirror.post_contact(contact)
     mirror.subscribe(callback_url='https://scouteronglass.com/mirror/subscription/reply/', subscription_type="reply", user_token=id)
