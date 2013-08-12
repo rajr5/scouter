@@ -70,7 +70,7 @@ def _register_glass_app(mirror, id):
         print "contact", contact.id
     # if len(contacts) == 0:
     mirror.clear_contacts()
-    contact = Contact(display_name="Scouter", id=id, image_urls=['https://scouteronglass.com/static/img/logo_square.png'],
+    contact = Contact(display_name="Scouter", id=id, image_urls=['https://scouteronglass.com/static/img/contact_img.png'],
                       type="INDIVIDUAL", accept_types=["image/jpeg", "image/png"], priority=1)
     mirror.post_contact(contact)
     mirror.subscribe(callback_url='https://scouteronglass.com/mirror/subscription/reply/', subscription_type="reply", user_token=id)

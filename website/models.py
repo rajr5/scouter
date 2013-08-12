@@ -73,7 +73,9 @@ class GoogleCredential(models.Model):
             credentials = self.oauth2credentials()
             credentials.refresh(http)
             print "refresh token", credentials.refresh_token
+            print "token expiry", credentials.token_expiry, "old", self.token_expiry
             self.refresh_token = credentials.refresh_token
+            self.token_expiry = credentials.token_expiry
             self.save()
         else:
             print "none"
