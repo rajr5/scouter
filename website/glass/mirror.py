@@ -235,7 +235,23 @@ class Mirror(object):
         self.service = service
         return service
 
+
+
     def get_service_from_token(self, access_token, token_expiry=None, client_secrets_filename=None, refresh_token=None):
+        """
+        Give tokens, create an OAuth2Credentials object and use it to build the Mirror service. Useful if you only
+        have the tokens and don't feel like making the object yourself.
+        @param access_token:
+        @type access_token:
+        @param token_expiry:
+        @type token_expiry:
+        @param client_secrets_filename:
+        @type client_secrets_filename:
+        @param refresh_token:
+        @type refresh_token:
+        @return:
+        @rtype:
+        """
         client_id, client_secret = self._get_client_secrets(client_secrets_filename)
         credentials = OAuth2Credentials(access_token=access_token, client_id=client_id, client_secret=client_secret,
                                         refresh_token=refresh_token, token_expiry=token_expiry, token_uri="https://accounts.google.com/o/oauth2/token", user_agent=None)
@@ -305,6 +321,20 @@ class Mirror(object):
 
     def _get_storage(self):
         return Storage(CREDENTIAL_STORAGE_FILE)
+
+    @classmethod
+    def from_credentials(cls, credentials, scopes=[]):
+        """
+        Given a credentials object, get the Mirror object with credentials, service, and http initialized.
+        @param credentials:
+        @type credentials:
+        @return:
+        @rtype:
+        """
+
+        mirror = cls(scopes)
+        mirror._get_service(credentials)
+        return mirror
 
 class SubscriptionEvent(object):
     def parse(self, notification, mirror):

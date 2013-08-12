@@ -9,7 +9,7 @@ from django.conf import settings
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from oauth2client.client import flow_from_clientsecrets
 from django.contrib.auth import login, authenticate
-
+from website.glass.mirror import Mirror
 
 def get_auth_url(request, redirect_uri='http://localhost:8000/oauth/google/redirect/', client_secrets_filename=None):
     flow = _get_flow(redirect_uri=redirect_uri, client_secrets_filename=client_secrets_filename)

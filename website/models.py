@@ -14,6 +14,8 @@ from oauth2client.django_orm import Storage
 from django.contrib import admin
 from oauth2client.client import Credentials
 import datetime
+from oauth2client.client import OAuth2Credentials
+from django.utils.timezone import utc
 
 class GoogleCredential(models.Model):
     """
@@ -59,6 +61,39 @@ class GoogleCredential(models.Model):
             setattr(credential, k, v)
         credential.save()
         return credential
+
+    def needs_refresh(self):
+        now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        print "token expiry", self.token_expiry, "now", now, "needs refresh?", self.token_expiry < now
+        return self.token_expiry < now
+
+    def refresh(self, http, force=False):
+        # Refreshes if necessary.
+        if self.needs_refresh() or force:
+            credentials = self.oauth2credentials()
+            credentials.refresh(http)
+            print "refresh token", credentials.refresh_token
+            self.refresh_token = credentials.refresh_token
+            self.save()
+        else:
+            print "none"
+
+    def oauth2credentials(self):
+        kwargs = {
+            "token_expiry": self.token_expiry,
+            "access_token": self.access_token,
+            "token_uri": self.token_uri,
+            # "invalid": self.invalid,
+            # "token_type": self.token_type,
+            # "expires_in": self.expires_in,
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "revoke_uri": self.revoke_uri,
+            "user_agent": self.user_agent,
+            "refresh_token": self.refresh_token,
+        }
+        return OAuth2Credentials(**kwargs)
+
 
 class CredentialsAdmin(admin.ModelAdmin):
     pass

@@ -12,7 +12,7 @@ from django.forms.models import model_to_dict
 from django.contrib.auth.models import User
 from allauth.socialaccount.models import SocialAccount, SocialToken
 from website.models import GoogleCredential
-from glass.mirror import Mirror, Timeline, Contact
+from website.glass.mirror import Mirror, Timeline, Contact
 import logging
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -23,6 +23,8 @@ import urllib
 from glass import oauth_utils
 from django.contrib.auth import login, authenticate, logout
 import os
+import datetime
+
 
 debug_logger = logging.getLogger('debugger')
 client_secrets_filename = os.path.join(settings.PROJECT_ROOT, 'client_secrets.json')
@@ -33,26 +35,31 @@ def homepage(request):
     if not request.user.is_authenticated():
         return HttpResponseRedirect(oauth_utils.get_auth_url(request, client_secrets_filename=client_secrets_filename, redirect_uri=settings.GOOGLE_REDIRECT_URI))
     print request.user.id
-    try:
-        credentials = oauth_utils.get_credentials(request)
-    except Exception:
-        return logout(request)
-    # try:
-    # token = _get_token(request.user.id)
-    if credentials is not None:
-        mirror = Mirror()
-        service = mirror.get_service_from_token(credentials.access_token, refresh_token=credentials.refresh_token, token_expiry=credentials.token_expiry)
-        # print "Token", token
-        # timeline = Timeline(text="Hello Glass!")
-        # mirror.post_timeline(timeline)
-        _register_glass_app(mirror, request.user.id)
-    # except Exception as e:
-    #     print e
-    #     print "No token for user id", request.user.id
+    mirror = _get_mirror(request.user.id)
+    _register_glass_app(mirror, request.user.id)
     return render_to_response('home.html', context_instance=RequestContext(request))
+
+
+def _get_mirror(user_id):
+    """
+    Given a request, build the mirror object by getting the credentials from the DB and building it.
+    @param request:
+    @type request:
+    @return:
+    @rtype:
+    """
+    google_credentials = GoogleCredential.objects.get(user=user_id)
+    oauth_credentials = google_credentials.oauth2credentials()
+    mirror = Mirror.from_credentials(oauth_credentials)
+    if google_credentials.needs_refresh():
+        print "trying refresh", oauth_credentials.refresh_token
+    google_credentials.refresh(http=mirror.http, force=True)
+    return mirror
+
 
 def oauth_redirect(request):
     return oauth_utils.process_oauth_redirect(request, client_secrets_filename=client_secrets_filename, redirect_uri=settings.GOOGLE_REDIRECT_URI)
+
 
 def _register_glass_app(mirror, id):
     """
@@ -68,6 +75,7 @@ def _register_glass_app(mirror, id):
     mirror.post_contact(contact)
     mirror.subscribe(callback_url='https://scouteronglass.com/mirror/subscription/reply/', subscription_type="reply", user_token=id)
 
+# def check_refresh(credentials):
 
 @login_required
 def clear_contacts(request):
