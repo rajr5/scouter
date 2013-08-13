@@ -82,7 +82,6 @@ def _register_glass_app(mirror, id):
     mirror.post_contact(contact)
     mirror.subscribe(callback_url='https://scouteronglass.com/mirror/subscription/reply/', subscription_type="reply", user_token=id)
 
-# def check_refresh(credentials):
 
 @login_required
 def clear_contacts(request):
@@ -93,17 +92,21 @@ def clear_contacts(request):
     mirror.clear_contacts()
     return HttpResponse("Clear!")
 
+
 @login_required
 def callback(request):
     pass
+
 
 @login_required
 def auth_return(request):
     pass
 
+
 def _get_credentials(id):
     debug_logger.info("Get credentials for user: {0}".format(id))
     return GoogleCredential.objects.get(user=id)
+
 
 def _get_token(id):
     # print "token id", id
@@ -158,6 +161,7 @@ def subscription_reply(request):
         raise
     mirror.update_timeline(timeline)
     return HttpResponse('OK')
+
 
 def _create_timelines(cards, mirror, timeline_item):
     """
