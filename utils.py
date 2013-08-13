@@ -25,7 +25,6 @@ from apiclient.discovery import build
 import sessions
 
 
-
 # Load the secret that is used for client side sessions
 # Create one of these for yourself with, for example:
 # python -c "import os; print os.urandom(64)" > session.secret
@@ -33,48 +32,48 @@ SESSION_SECRET = open('session.secret').read()
 
 
 def get_full_url(request_handler, path):
-  """Return the full url from the provided request handler and path."""
-  pr = urlparse(request_handler.request.url)
-  return '%s://%s%s' % (pr.scheme, pr.netloc, path)
+    """Return the full url from the provided request handler and path."""
+    pr = urlparse(request_handler.request.url)
+    return '%s://%s%s' % (pr.scheme, pr.netloc, path)
 
 
 def load_session_credentials(request_handler):
-  """Load credentials from the current session."""
-  session = sessions.LilCookies(request_handler, SESSION_SECRET)
-  userid = session.get_secure_cookie(name='userid')
-  if userid:
-    return userid, StorageByKeyName(Credentials, userid, 'credentials').get()
-  else:
-    return None, None
+    """Load credentials from the current session."""
+    session = sessions.LilCookies(request_handler, SESSION_SECRET)
+    userid = session.get_secure_cookie(name='userid')
+    if userid:
+        return userid, StorageByKeyName(Credentials, userid, 'credentials').get()
+    else:
+        return None, None
 
 
 def store_userid(request_handler, userid):
-  """Store current user's ID in session."""
-  session = sessions.LilCookies(request_handler, SESSION_SECRET)
-  session.set_secure_cookie(name='userid', value=userid)
+    """Store current user's ID in session."""
+    session = sessions.LilCookies(request_handler, SESSION_SECRET)
+    session.set_secure_cookie(name='userid', value=userid)
 
 
 def create_service(service, version, creds=None):
-  """Create a Google API service.
+    """Create a Google API service.
 
-  Load an API service from a discovery document and authorize it with the
-  provided credentials.
+    Load an API service from a discovery document and authorize it with the
+    provided credentials.
 
-  Args:
-    service: Service name (e.g 'mirror', 'oauth2').
-    version: Service version (e.g 'v1').
-    creds: Credentials used to authorize service.
-  Returns:
-    Authorized Google API service.
-  """
-  # Instantiate an Http instance
-  http = httplib2.Http()
+    Args:
+      service: Service name (e.g 'mirror', 'oauth2').
+      version: Service version (e.g 'v1').
+      creds: Credentials used to authorize service.
+    Returns:
+      Authorized Google API service.
+    """
+    # Instantiate an Http instance
+    http = httplib2.Http()
 
-  if creds:
-    # Authorize the Http instance with the passed credentials
-    creds.authorize(http)
+    if creds:
+        # Authorize the Http instance with the passed credentials
+        creds.authorize(http)
 
-  return build(service, version, http=http)
+    return build(service, version, http=http)
 
 
 def auth_required(handler_method):

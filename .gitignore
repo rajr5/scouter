@@ -52,3 +52,6 @@ share/
 client_secrets.json
 credentials.json
 fabric_pass.txt
+davis.jpg
+scouter/static/posted_images/*.jpg
+scouter/static/faces/*.jpg

@@ -5,7 +5,8 @@ import sys
 PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 LOG_DIR = os.path.abspath(os.path.join(PROJECT_ROOT, 'logs_dev'))
 
-GOOGLE_SCOPE = ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/glass.timeline']
+GOOGLE_SCOPE = ['https://www.googleapis.com/auth/userinfo.profile',
+                'https://www.googleapis.com/auth/glass.timeline']
 env = os.environ.get('ENV', 'local')
 print env
 if env == 'production':
@@ -23,15 +24,15 @@ if env == 'production':
     #     }
     # }
     SOCIALACCOUNT_PROVIDERS = \
-    { 'google':
-        { 'SCOPE': ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/glass.timeline'],
-          'AUTH_PARAMS': {'access_type': 'offline',
-             # 'redirect_uri': 'https://scouteronglass.com/accounts/google/login/callback/'
+        {'google':
+        {'SCOPE': ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/glass.timeline'],
+         'AUTH_PARAMS': {'access_type': 'offline',
+                         # 'redirect_uri': 'https://scouteronglass.com/accounts/google/login/callback/'
 
-             },
-          'METHOD': 'oauth2'
+                         },
+         'METHOD': 'oauth2'
          }
-    }
+         }
     GOOGLE_REDIRECT_URI = 'https://scouteronglass.com/oauth/google/redirect/'
 
 else:
@@ -40,7 +41,7 @@ else:
     TEMPLATE_DEBUG = DEBUG
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+            'ENGINE': 'django.db.backends.mysql',  # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
             'NAME': 'scouter',                      # Or path to database file if using sqlite3.
             'USER': 'scouter',                      # Not used with sqlite3.
             'PASSWORD': 'password',                  # Not used with sqlite3.
@@ -49,12 +50,12 @@ else:
         }
     }
     SOCIALACCOUNT_PROVIDERS = \
-    { 'google':
-        { 'SCOPE': ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/glass.timeline'],
-          'AUTH_PARAMS': {'access_type': 'offline',
-                          'approval_prompt': 'force'}
+        {'google':
+        {'SCOPE': ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/glass.timeline'],
+         'AUTH_PARAMS': {'access_type': 'offline',
+                         'approval_prompt': 'force'}
          }
-    }
+         }
     GOOGLE_REDIRECT_URI = 'http://localhost:8000/oauth/google/redirect/'
 
 
@@ -63,8 +64,6 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
-
-
 
 
 # Local time zone for this installation. Choices can be found here:
@@ -123,7 +122,7 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -133,7 +132,7 @@ SECRET_KEY = 'v+@7(495le9ik_b+tl+@ow==ryk8rid(fj%)+_ya%_*6=&amp;dq@2'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
+    #     'django.template.loaders.eggs.Loader',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -196,63 +195,62 @@ INSTALLED_APPS = (
 )
 
 
-
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error when DEBUG=False.
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
 LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'filters': {
-            'require_debug_false': {
-                '()': 'django.utils.log.RequireDebugFalse'
-            }
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+    'require_debug_false': {
+    '()': 'django.utils.log.RequireDebugFalse'
+    }
+    },
+    'formatters': {
+    'verbose': {
+    'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+    },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
         },
-        'formatters': {
-            'verbose': {
-                'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-            },
-            'simple': {
-                'format': '%(levelname)s %(message)s'
-            },
+    },
+    'handlers': {
+    'mail_admins': {
+    'level': 'ERROR',
+    'filters': ['require_debug_false'],
+    'class': 'django.utils.log.AdminEmailHandler'
+    },
+        'file_log': {                 # define and name a second handler
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',  # set the logging class to log to a file
+            'formatter': 'verbose',         # define the formatter to associate
+            'filename': os.path.join(PROJECT_ROOT, 'logs/output.log')  # log file
         },
-        'handlers': {
-            'mail_admins': {
-                'level': 'ERROR',
-                'filters': ['require_debug_false'],
-                'class': 'django.utils.log.AdminEmailHandler'
-            },
-            'file_log': {                 # define and name a second handler
-                'level': 'DEBUG',
-                'class': 'logging.FileHandler', # set the logging class to log to a file
-                'formatter': 'verbose',         # define the formatter to associate
-                'filename': os.path.join(PROJECT_ROOT, 'logs/output.log')  # log file
-            },
-            'console':{
-                'level':'DEBUG',
-                'class':'logging.StreamHandler',
-                'formatter': 'simple'
-            },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
         },
-        'loggers': {
-            'django.request': {
-                'handlers': ['mail_admins'],
-                'level': 'ERROR',
-                'propagate': True,
-            },
-            'debugger': {
-                'handlers': ['file_log', 'console'],
-                'level': 'DEBUG',
-                'propagate': True,
-            },
-            'views': {               # define another logger
-                'handlers': ['console'],  # associate a different handler
-                'level': 'DEBUG',                 # specify the logging level
-                'propagate': True,
-            },
-        }
+    },
+    'loggers': {
+    'django.request': {
+    'handlers': ['mail_admins'],
+    'level': 'ERROR',
+    'propagate': True,
+    },
+        'debugger': {
+            'handlers': ['file_log', 'console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'views': {               # define another logger
+            'handlers': ['console'],  # associate a different handler
+            'level': 'DEBUG',                 # specify the logging level
+            'propagate': True,
+        },
+}
 }
 
 try:

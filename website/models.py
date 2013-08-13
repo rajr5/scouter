@@ -20,13 +20,15 @@ import logging
 
 logger = logging.getLogger("debugger")
 
+
 class GoogleCredential(models.Model):
     """
     Google's provided model was cool, except South didn't like it.
     """
     token_expiry = models.DateTimeField(default=datetime.datetime.now())
     access_token = models.CharField(max_length=255)
-    token_uri = models.URLField(default="https://accounts.google.com/o/oauth2/token")
+    token_uri = models.URLField(
+        default="https://accounts.google.com/o/oauth2/token")
     invalid = models.BooleanField(default=False)
     token_type = models.CharField(max_length=32)
     expires_in = models.IntegerField()
@@ -34,9 +36,11 @@ class GoogleCredential(models.Model):
     # id_token = models.CharField(max_length=255)
     client_secret = models.CharField(max_length=64)
     revoke_uri = models.URLField()
-    user_agent = models.CharField(max_length=255, blank=True, null=True, default=None)
+    user_agent = models.CharField(
+        max_length=255, blank=True, null=True, default=None)
     user = models.ForeignKey(User, primary_key=True)
-    refresh_token = models.CharField(max_length=255, blank=True, null=True, default=None)
+    refresh_token = models.CharField(
+        max_length=255, blank=True, null=True, default=None)
 
     @classmethod
     def from_json(cls, json_data, user=None):
@@ -67,7 +71,8 @@ class GoogleCredential(models.Model):
 
     def needs_refresh(self):
         now = datetime.datetime.utcnow().replace(tzinfo=utc)
-        logger.debug("token expiry {0} now {1} needs refresh? {2}".format(self.token_expiry, now, self.token_expiry < now))
+        logger.debug("token expiry {0} now {1} needs refresh? {2}".format(
+            self.token_expiry, now, self.token_expiry < now))
         return self.token_expiry < now
 
     def refresh(self, http, force=False):
@@ -76,7 +81,8 @@ class GoogleCredential(models.Model):
             credentials = self.oauth2credentials()
             credentials.refresh(http)
             logger.debug("refresh token {0}".format(credentials.refresh_token))
-            logger.debug("token expiry {0} old {1}".format(credentials.token_expiry, self.token_expiry))
+            logger.debug("token expiry {0} old {1}".format(
+                credentials.token_expiry, self.token_expiry))
             self.refresh_token = credentials.refresh_token
             self.token_expiry = credentials.token_expiry
             self.save()

@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect,HttpResponseBadRequest,HttpResponseNotFound, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseNotFound, HttpResponse
 from django.contrib.auth.decorators import login_required
 # from django.contrib.auth import logout
 from django.shortcuts import render_to_response
@@ -24,10 +24,11 @@ from glass import oauth_utils
 from django.contrib.auth import login, authenticate, logout
 import os
 import datetime
-
+import random
 
 debug_logger = logging.getLogger('debugger')
-client_secrets_filename = os.path.join(settings.PROJECT_ROOT, 'client_secrets.json')
+client_secrets_filename = os.path.join(
+    settings.PROJECT_ROOT, 'client_secrets.json')
 
 
 def homepage(request):
@@ -77,8 +78,10 @@ def _register_glass_app(mirror, id):
         display_name = "Scouter"
     else:
         display_name = "Scouter Dev"
-    contact = Contact(display_name=display_name, id=id, image_urls=['https://scouteronglass.com/static/img/contact_img.png'],
-                      type="INDIVIDUAL", accept_types=["image/jpeg", "image/png"], priority=1)
+    contact = Contact(
+        display_name=display_name, id=id, image_urls=[
+            'https://scouteronglass.com/static/img/contact_img.png'],
+        type="INDIVIDUAL", accept_types=["image/jpeg", "image/png"], priority=1)
     mirror.post_contact(contact)
     mirror.subscribe(callback_url='https://scouteronglass.com/mirror/subscription/reply/', subscription_type="reply", user_token=id)
 
@@ -87,7 +90,8 @@ def _register_glass_app(mirror, id):
 def clear_contacts(request):
     credentials = _get_credentials(request.user.id)
     mirror = Mirror()
-    service = mirror.get_service_from_token(credentials.access_token, refresh_token=credentials.client_secret)
+    service = mirror.get_service_from_token(
+        credentials.access_token, refresh_token=credentials.client_secret)
     print "got service"
     mirror.clear_contacts()
     return HttpResponse("Clear!")
@@ -133,7 +137,8 @@ def subscription_reply(request):
     print "post", post.items()
     user_id = post['userToken']
     user = User.objects.get(id=user_id)
-    # print "token", user, "userid", user.id, "socialaccountid", SocialAccount.objects.all()[0].user.id
+    # print "token", user, "userid", user.id, "socialaccountid",
+    # SocialAccount.objects.all()[0].user.id
     credentials = _get_credentials(user.id)
 
     if credentials is not None:
@@ -143,17 +148,19 @@ def subscription_reply(request):
             print m.id
     else:
         return HttpResponseBadRequest("Need valid userToken")
-    #print "list timeline", mirror.list_timeline()[0]
+    # print "list timeline", mirror.list_timeline()[0]
     item = mirror.parse_notification(request.body)
     timeline_item = item.timeline
-    #print "TA", timeline_item.attachments
+    # print "TA", timeline_item.attachments
     attachment = mirror.get_timeline_attachment(timeline_item)
-    #print "attach", type(attachment), attachment
-    with open('image.jpg', 'w') as f:
+    # print "attach", type(attachment), attachment
+    full_image_filename = os.path.join(settings.PROJECT_DIR, 'scouter/static/posted_images/', '%030x.jpg' % random.randrange(16**30))
+
+    with open(full_image_filename, 'w') as f:
         f.write(attachment)
-    #print "Attachment", attachment
-    cards = scout('image.jpg')
-    #print "Power levels", cards
+    # print "Attachment", attachment
+    cards = scout(full_image_filename)
+    # print "Power levels", cards
     try:
         timeline = _create_timelines(cards, mirror, timeline_item)
     except Exception:
@@ -195,11 +202,13 @@ def _create_timelines(cards, mirror, timeline_item):
         return timeline_item
     elif len(cards) > 1:
         for card in cards[1:]:
-            # Create a new timeline card for each of the other cards, adding them to a bundle.
+            # Create a new timeline card for each of the other cards, adding
+            # them to a bundle.
             pass
     template_data = {'power_level': cards[0][1]}
     if template_data['power_level'] > 9000:
-        template_data['over_9000'] = """<h1 style="color:red">It's over 9000!!!!</h1>"""
+        template_data[
+            'over_9000'] = """<h1 style="color:red">It's over 9000!!!!</h1>"""
     else:
         template_data['over_9000'] = ""
     timeline_item.html = card_template.format(**template_data)
@@ -207,5 +216,3 @@ def _create_timelines(cards, mirror, timeline_item):
     mirror.insert_timeline_attachement(timeline_item, img_file)
     # timeline_item.add_attachment(img_file, 'image/jpg')
     return timeline_item
-
-

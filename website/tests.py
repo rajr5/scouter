@@ -33,11 +33,13 @@ class TestContactReply(unittest.TestCase):
 
         print "load dump", json.loads(json.dumps(json_data))
         j = json.loads(json_data)
-        response = c.post('/mirror/subscription/reply/', json.dumps(j), "text/json",
-                    HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        response = c.post(
+            '/mirror/subscription/reply/', json.dumps(j), "text/json",
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
 
         # print response
         self.assertTrue(response.status_code == 200)
+
 
 def run_tests():
     suite = unittest.TestLoader().loadTestsFromTestCase(TestContactReply)

@@ -5,6 +5,7 @@ import math
 import random
 import io
 import Image
+import os
 # from apiclient.http import MediaIoBaseUpload
 
 """
@@ -16,9 +17,10 @@ Colors are in BGR??
 # Ratio of width to height of timeline images.
 RATIO = 0.66
 
+
 def face_detect(img, cascade_fn='haarcascades/haarcascade_frontalface_alt.xml',
-           scaleFactor=1.3, minNeighbors=2, minSize=(20, 20),
-           flags=cv.CV_HAAR_SCALE_IMAGE):
+                scaleFactor=1.3, minNeighbors=2, minSize=(20, 20),
+                flags=cv.CV_HAAR_SCALE_IMAGE):
     """
     Given an image, find the faces.
     """
@@ -65,7 +67,7 @@ def distance(x1, y1, x2, y2):
     """
     Standard distance formula (truncated)
     """
-    return int(math.sqrt((x1 - x2)**2 + (y1 - y2)**2))
+    return int(math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2))
 
 
 def radius_of_rectangle(rect):
@@ -79,7 +81,7 @@ def power_level(rect):
     """
     TODO Figure out power level based on how much blonde hair is in the picture.
     """
-    return random.randrange(1,30000)
+    return random.randrange(1, 30000)
 
 
 def write_text(img, rect, text, font_color):
@@ -87,11 +89,13 @@ def write_text(img, rect, text, font_color):
     Try to intelligently write the give text above (preferred) or below the image.
     """
 
-    cv2.putText(img, text, (rect[0] -100, rect[2] -100), cv2.FONT_HERSHEY_SIMPLEX, 8.0, font_color,
-            thickness=20, lineType=cv2.CV_AA)
+    cv2.putText(
+        img, text, (rect[0] - 100, rect[2] -
+                    100), cv2.FONT_HERSHEY_SIMPLEX, 8.0, font_color,
+        thickness=20, lineType=cv2.CV_AA)
 
 
-def slice_face(rect, img):
+def slice_face(rect, img, store_faces_path):
     """
     Given a rectangle and the image, attempts to slice an image of the appropriate dimensions.
     Returns filename of image.
@@ -99,17 +103,21 @@ def slice_face(rect, img):
     # Decide image width
     width = rect[3] - rect[1]
     height = width + width / 2
-    # Extra bit to add on to the top and bottom of image so we get an image of appropriate height for our card.
+    # Extra bit to add on to the top and bottom of image so we get an image of
+    # appropriate height for our card.
     extra_crop = width / 4
     print "hxw", height, width
-    filename = '%030x' % random.randrange(16**30)
+    filename = '%030x' % random.randrange(16 ** 30)
     print filename
-    cv2.imwrite('/tmp/{0}.jpg'.format(filename) ,img[rect[1]-extra_crop:rect[3]+extra_crop, rect[0]:rect[2]])
-    size= 240, 360
+    file_path = os.path.join(store_faces_path, filename + '.jpg')
+    cv2.imwrite('/tmp/{0}.jpg'.format(filename), img[rect[1] -
+                extra_crop:rect[3] + extra_crop, rect[0]:rect[2]])
+    size = 240, 360
     im = Image.open('/tmp/{0}.jpg'.format(filename))
     im.thumbnail(size, Image.ANTIALIAS)
-    im.save('/tmp/{0}.jpg'.format(filename), "JPEG")
-    return filename
+    im.save(file_path, "JPEG")
+    return file_path
+
 
 def create_card(face, power):
     """
@@ -119,11 +127,12 @@ def create_card(face, power):
     # timeline_item = {'text': 'Hello world'}
     # media_body = MediaIoBaseUpload(
     #     io.BytesIO(face), mimetype="image/jpeg", resumable=True)
-    # service.timeline().insert(body=timeline_item, media_body=media_body).execute()
+    # service.timeline().insert(body=timeline_item,
+    # media_body=media_body).execute()
     pass
 
 
-def scout(image_in):
+def scout(image_in, store_faces_path='/tmp/'):
     """
     Returns an array of tuples in the form (filename, power level)
     """
@@ -132,12 +141,12 @@ def scout(image_in):
     # filename = '%030x' % random.randrange(16**30)
     # with open('/tmp/{0}.jpg'.format(filename), 'w') as f:
     #     f.write(image_in)
-    font_color = (68,205,228)
+    font_color = (68, 205, 228)
     img_color = cv2.imread(image_in)
     img_gray = cv2.cvtColor(img_color, cv.CV_RGB2GRAY)
     img_gray = cv2.equalizeHist(img_gray)
     print image_in, img_gray.shape
- 
+
     print ">>> Detecting faces..."
     start = time.time()
     rects = face_detect(img_gray)
@@ -148,23 +157,24 @@ def scout(image_in):
     faces = []
     cards = []
     for rect in rects:
-        faces.append(slice_face(rect, img_out))
+        faces.append(slice_face(rect, img_out, store_faces_path))
     for face in faces:
         power = power_level(face)
         power_tuple = (face, power)
         cards.append(power_tuple)
     return cards
     # cv2.imwrite(image_out, img_out)
- 
- 
+
+
 def main():
     """
     Just for testing!
     """
-    for pic in ['img/kuhn.jpg',]:
-    # for pic in ['pic.jpg', 'pic1.jpg', 'pic2.jpg', 'pic3.jpg', 'pic4.jpg', 'kuhn.jpg']:
-        scout(pic, )
- 
- 
+    for pic in ['davis.jpg', ]:
+    # for pic in ['pic.jpg', 'pic1.jpg', 'pic2.jpg', 'pic3.jpg', 'pic4.jpg',
+    # 'kuhn.jpg']:
+        print scout(pic, )
+
+
 if __name__ == '__main__':
     main()
