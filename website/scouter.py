@@ -20,9 +20,57 @@ logger = logging.getLogger('debugger')
 # Ratio of width to height of timeline images.
 RATIO = 0.66
 
-
+# def draw_rects(img, rects, color):
+#     """
+#     Given an image, sets of rectangles, and a color, draw them on img. img will be now be the image + rectangles.
+#     """
+#     for x1, y1, x2, y2 in rects:
+#         cv2.rectangle(img, (x1, y1), (x2, y2), color, 2)
+#
+#
+# def draw_circles(img, circles, color):
+#     """
+#     Given rectangles, create and draw circles with center point at the center of the rectangle and with radius = half
+#     the diagonal of the rectangle.
+#     """
+#     for rect in circles:
+#         center = center_of_rectangle(rect)
+#         radius = radius_of_rectangle(rect)
+#         cv2.circle(img, center, int(radius * .75), color, thickness=20)
+#
+#
+# def center_of_rectangle(rect):
+#     """
+#     Standard center point of rectangle formula (truncated)
+#     """
+#     x1, y1, x2, y2 = rect
+#     return int((x2 + x1) / 2), int((y2 + y1) / 2)
+#
+#
+# def distance(x1, y1, x2, y2):
+#     """
+#     Standard distance formula (truncated)
+#     """
+#     return int(math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2))
+#
+#
+# def radius_of_rectangle(rect):
+#     """
+#     Given rectangle, find half the diameter (truncated)
+#     """
+#     return int(distance(rect[0], rect[1], rect[2], rect[3]) / 2)
+#
+# def write_text(img, rect, text, font_color):
+#     """
+#     Try to intelligently write the give text above (preferred) or below the image.
+#     """
+#
+#     cv2.putText(
+#         img, text, (rect[0] - 100, rect[2] -
+#                     100), cv2.FONT_HERSHEY_SIMPLEX, 8.0, font_color,
+#         thickness=20, lineType=cv2.CV_AA)
 def face_detect(img, cascade_fn='haarcascades/haarcascade_frontalface_alt.xml',
-                scaleFactor=1.3, minNeighbors=2, minSize=(20, 20),
+                scaleFactor=1.3, minNeighbors=2, minSize=(100, 100),
                 flags=cv.CV_HAAR_SCALE_IMAGE):
     """
     Given an image, find the faces.
@@ -37,63 +85,11 @@ def face_detect(img, cascade_fn='haarcascades/haarcascade_frontalface_alt.xml',
     return rects
 
 
-def draw_rects(img, rects, color):
-    """
-    Given an image, sets of rectangles, and a color, draw them on img. img will be now be the image + rectangles.
-    """
-    for x1, y1, x2, y2 in rects:
-        cv2.rectangle(img, (x1, y1), (x2, y2), color, 2)
-
-
-def draw_circles(img, circles, color):
-    """
-    Given rectangles, create and draw circles with center point at the center of the rectangle and with radius = half
-    the diagonal of the rectangle.
-    """
-    for rect in circles:
-        center = center_of_rectangle(rect)
-        radius = radius_of_rectangle(rect)
-        cv2.circle(img, center, int(radius * .75), color, thickness=20)
-
-
-def center_of_rectangle(rect):
-    """
-    Standard center point of rectangle formula (truncated)
-    """
-    x1, y1, x2, y2 = rect
-    return int((x2 + x1) / 2), int((y2 + y1) / 2)
-
-
-def distance(x1, y1, x2, y2):
-    """
-    Standard distance formula (truncated)
-    """
-    return int(math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2))
-
-
-def radius_of_rectangle(rect):
-    """
-    Given rectangle, find half the diameter (truncated)
-    """
-    return int(distance(rect[0], rect[1], rect[2], rect[3]) / 2)
-
-
 def power_level(rect):
     """
     TODO Figure out power level based on how much blonde hair is in the picture.
     """
     return random.randrange(1, 30000)
-
-
-def write_text(img, rect, text, font_color):
-    """
-    Try to intelligently write the give text above (preferred) or below the image.
-    """
-
-    cv2.putText(
-        img, text, (rect[0] - 100, rect[2] -
-                    100), cv2.FONT_HERSHEY_SIMPLEX, 8.0, font_color,
-        thickness=20, lineType=cv2.CV_AA)
 
 
 def slice_face(rect, img, store_faces_path):
@@ -104,6 +100,7 @@ def slice_face(rect, img, store_faces_path):
     # Decide image width
     width = rect[3] - rect[1]
     height = width + width / 2
+    logger.debug("Face height/width: {0} x {1}".format(height, width))
     # Extra bit to add on to the top and bottom of image so we get an image of
     # appropriate height for our card.
     extra_crop = width / 4
@@ -118,19 +115,6 @@ def slice_face(rect, img, store_faces_path):
     return file_path
 
 
-def create_card(face, power):
-    """
-    Creates the HTML and meta data for a timeline Glass card from a face and a power level.
-    """
-
-    # timeline_item = {'text': 'Hello world'}
-    # media_body = MediaIoBaseUpload(
-    #     io.BytesIO(face), mimetype="image/jpeg", resumable=True)
-    # service.timeline().insert(body=timeline_item,
-    # media_body=media_body).execute()
-    pass
-
-
 def scout(image_in, store_faces_path='/tmp/'):
     """
     Returns an array of tuples in the form (filename, power level)
@@ -139,7 +123,7 @@ def scout(image_in, store_faces_path='/tmp/'):
     # filename = '%030x' % random.randrange(16**30)
     # with open('/tmp/{0}.jpg'.format(filename), 'w') as f:
     #     f.write(image_in)
-    font_color = (68, 205, 228)
+    # font_color = (68, 205, 228)
     img_color = cv2.imread(image_in)
     img_gray = cv2.cvtColor(img_color, cv.CV_RGB2GRAY)
     img_gray = cv2.equalizeHist(img_gray)
