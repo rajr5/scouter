@@ -109,10 +109,8 @@ def slice_face(rect, img, store_faces_path):
     extra_crop = width / 4
     filename = '%030x' % random.randrange(16 ** 30)
     file_path = os.path.join(store_faces_path, filename + '.jpg')
-    logger.debug("Cropping: {0}, {1}".format(img[rect[1] -
-                extra_crop:rect[3] + extra_crop, rect[0]:rect[2]]))
-    cv2.imwrite('/tmp/{0}.jpg'.format(filename), img[rect[1] -
-                extra_crop:rect[3] + extra_crop, rect[0]:rect[2]])
+    logger.debug("Cropping: {0}, {1}, {2}, {3}".format(img[rect[1] - extra_crop, rect[3] + extra_crop, rect[0], rect[2]]))
+    cv2.imwrite('/tmp/{0}.jpg'.format(filename), img[rect[1] - extra_crop:rect[3] + extra_crop, rect[0]:rect[2]])
     size = 240, 360
     im = Image.open('/tmp/{0}.jpg'.format(filename))
     im.thumbnail(size, Image.ANTIALIAS)
