@@ -60,6 +60,7 @@ RATIO = 0.66
 #     """
 #     return int(distance(rect[0], rect[1], rect[2], rect[3]) / 2)
 #
+#
 # def write_text(img, rect, text, font_color):
 #     """
 #     Try to intelligently write the give text above (preferred) or below the image.
@@ -69,6 +70,8 @@ RATIO = 0.66
 #         img, text, (rect[0] - 100, rect[2] -
 #                     100), cv2.FONT_HERSHEY_SIMPLEX, 8.0, font_color,
 #         thickness=20, lineType=cv2.CV_AA)
+
+
 def face_detect(img, cascade_fn='haarcascades/haarcascade_frontalface_alt.xml',
                 scaleFactor=1.3, minNeighbors=2, minSize=(100, 100),
                 flags=cv.CV_HAAR_SCALE_IMAGE):
@@ -106,6 +109,8 @@ def slice_face(rect, img, store_faces_path):
     extra_crop = width / 4
     filename = '%030x' % random.randrange(16 ** 30)
     file_path = os.path.join(store_faces_path, filename + '.jpg')
+    logger.debug("Cropping: {0}, {1}".format(img[rect[1] -
+                extra_crop:rect[3] + extra_crop, rect[0]:rect[2]]))
     cv2.imwrite('/tmp/{0}.jpg'.format(filename), img[rect[1] -
                 extra_crop:rect[3] + extra_crop, rect[0]:rect[2]])
     size = 240, 360
