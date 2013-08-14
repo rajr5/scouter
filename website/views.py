@@ -52,7 +52,10 @@ def _get_mirror(user_id):
     @return:
     @rtype:
     """
-    google_credentials = GoogleCredential.objects.get(user=user_id)
+    try:
+        google_credentials = GoogleCredential.objects.get(user=user_id)
+    except Exception:
+        raise ValueError("User {0} has no GoogleCredential".format(user_id))
     oauth_credentials = google_credentials.oauth2credentials()
     mirror = Mirror.from_credentials(oauth_credentials)
     if google_credentials.needs_refresh():
@@ -89,9 +92,7 @@ def _register_glass_app(mirror, id):
 @login_required
 def clear_contacts(request):
     credentials = _get_credentials(request.user.id)
-    mirror = Mirror()
-    service = mirror.get_service_from_token(
-        credentials.access_token, refresh_token=credentials.client_secret)
+    mirror = _get_mirror(request.user.id)
     print "got service"
     mirror.clear_contacts()
     return HttpResponse("Clear!")
@@ -137,17 +138,13 @@ def subscription_reply(request):
     print "post", post.items()
     user_id = post['userToken']
     user = User.objects.get(id=user_id)
-    # print "token", user, "userid", user.id, "socialaccountid",
-    # SocialAccount.objects.all()[0].user.id
-    credentials = _get_credentials(user.id)
-
-    if credentials is not None:
-        mirror = Mirror()
-        service = mirror.get_service_from_token(credentials.access_token)
-        for m in mirror.list_timeline():
-            print m.id
-    else:
+    try:
+        mirror = _get_mirror(user_id)
+    except ValueError:
         return HttpResponseBadRequest("Need valid userToken")
+    for m in mirror.list_timeline():
+        print m.id
+
     # print "list timeline", mirror.list_timeline()[0]
     item = mirror.parse_notification(request.body)
     timeline_item = item.timeline
