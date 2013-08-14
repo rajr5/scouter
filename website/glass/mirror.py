@@ -53,7 +53,6 @@ class Mirror(object):
         except gflags.FlagsError, e:
             print '%s\\nUsage: %s ARGS\\n%s' % (e, sys.argv[0], FLAGS)
             sys.exit(1)
-        # print "ARGV", argv
         flow = self._get_flow(scope)
         storage = self._get_storage()
         credentials = None
@@ -64,7 +63,6 @@ class Mirror(object):
             # credentials = None
         if credentials is None:
             credentials = run(flow, storage)
-        # print credentials
         self._get_service(credentials)
         return credentials
 
@@ -92,9 +90,7 @@ class Mirror(object):
         """
         Returns the list of Timeline objects.
         """
-        print "list"
         timeline = self.service.timeline().list().execute()
-        print "after list"
         timeline_list = []
         for t in timeline['items']:
             timeline_list.append(Timeline(json_data=t))
@@ -104,12 +100,6 @@ class Mirror(object):
         """
         Returns a single timeline object
         """
-        print "timeline id", id
-        ##
-        print "service", self.service
-        print self.service.timeline()
-        print self.service.timeline().list().execute()
-        ##
         timeline_json = self.service.timeline().get(id=id).execute()
         return Timeline(json_data=timeline_json)
 
@@ -121,7 +111,6 @@ class Mirror(object):
         return self.service.timeline().delete(id=id).execute()
 
     def get_timeline_attachment(self, timeline_item):
-        print "attachment id", timeline_item.attachment
         args = {'itemId': timeline_item.id, 'attachmentId': timeline_item.attachments}
         # response, content = self.http.request('https://www.googleapis.com/mirror/v1/timeline/{itemId}/attachments/{attachmentId}'.format(**args))
         response, content = self.http.request(timeline_item.attachment_url)
@@ -156,8 +145,6 @@ class Mirror(object):
         """
         Posts a contact/service that the user will be able to share with
         """
-        print contact
-        print contact.contact_body()
         return self.service.contacts().insert(body=contact.contact_body()).execute()
 
     def list_contacts(self):
@@ -272,9 +259,6 @@ class Mirror(object):
         client_id, client_secret = self._get_client_secrets(client_secrets_filename)
         credentials = OAuth2Credentials(access_token=access_token, client_id=client_id, client_secret=client_secret,
                                         refresh_token=refresh_token, token_expiry=token_expiry, token_uri="https://accounts.google.com/o/oauth2/token", user_agent=None)
-        # print "auth"
-        # credentials.authorize()
-        # print "authed"
         return self._get_service(credentials)
     
     def _get_client_secrets(self, filename=None):
@@ -310,7 +294,6 @@ class Mirror(object):
         except Exception as e:
             raise Exception("Could not read JSON data from client secrets file: {0} because {1}".format(json_file, e))
         try:
-            print data
             client_id = data['web']['client_id']
             client_secret = data['web']['client_secret']
         except ValueError:
@@ -327,13 +310,11 @@ class Mirror(object):
 
         if redirect_uri is None:
             redirect_uri = 'https://localhost:8000'
-        print "redir_uri", redirect_uri
         flow = OAuth2WebServerFlow(client_id=client_id,
                                client_secret=client_secret,
                                scope=self.scopes,
                                redirect_uri=redirect_uri,
                                access_type='offline')
-        print flow.redirect_uri
         return flow
 
     def _get_storage(self):
@@ -413,7 +394,6 @@ class SubscriptionEvent(object):
         raise NotImplementedError()
 
     def _share(self, notification):
-        print "notification", notification['itemId']
         self.timeline = self._mirror.get_timeline(notification['itemId'])
 
     def _reply(self, notification):
@@ -448,10 +428,8 @@ class Timeline(object):
             for k, v in json_data.items():
                 if k == 'attachments':
                     for a in v:
-                        print "A", a
                         if 'contentUrl' in a:
                             self.attachment_url = a['contentUrl']
-                print "Setting timeline val", k, v
                 setattr(self, k, v)
             return
         if text:
@@ -481,7 +459,6 @@ class Timeline(object):
             timeline_body['html'] = self.html
         if self.notify:
             timeline_body['notification'] = {'level': 'DEFAULT'}
-        print "Timeline body", timeline_body
         return timeline_body
 
     def add_menu_item(self, item):
@@ -556,7 +533,6 @@ class Contact(object):
             body['phoneNumber'] = self.phone_number
         if self.priority:
             body['priority'] = self.priority
-        print "body", body
         return body
 
 
