@@ -159,7 +159,7 @@ def subscription_reply(request):
     with open(full_image_filename, 'w') as f:
         f.write(attachment)
     # print "Attachment", attachment
-    cards = scout(full_image_filename)
+    cards = scout(full_image_filename, os.path.join(settings.PROJECT_ROOT, 'scouter/static/posted_images/'))
     # print "Power levels", cards
     try:
         timeline = _create_timelines(cards, mirror, timeline_item)
@@ -212,7 +212,6 @@ def _create_timelines(cards, mirror, timeline_item):
     else:
         template_data['over_9000'] = ""
     timeline_item.html = card_template.format(**template_data)
-    img_file = '/tmp/{0}.jpg'.format(cards[0][0])
-    mirror.insert_timeline_attachement(timeline_item, img_file)
+    mirror.insert_timeline_attachement(timeline_item, cards[0]['face'])
     # timeline_item.add_attachment(img_file, 'image/jpg')
     return timeline_item

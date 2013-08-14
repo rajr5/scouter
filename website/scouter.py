@@ -159,9 +159,7 @@ def scout(image_in, store_faces_path='/tmp/'):
     for rect in rects:
         faces.append(slice_face(rect, img_out, store_faces_path))
     for face in faces:
-        power = power_level(face)
-        power_tuple = (face, power)
-        cards.append(power_tuple)
+        cards.append({'power': power_level(face), 'face': face})
     return cards
     # cv2.imwrite(image_out, img_out)
 
