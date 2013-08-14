@@ -155,7 +155,7 @@ def scout(image_in, store_faces_path='/tmp/'):
         cards.append({'power_level': power, 'face': face})
         logger.debug("Wrote face to {0} from original image {1} with power level: {2}".format(image_in, face, power))
     end = time.time()
-    logger.debug("Found {0} face(s) in {1} seconds".format(len(cards, end-start)))
+    logger.debug("Found {0} face(s) in {1} seconds".format(len(cards), end-start))
     return cards
     # cv2.imwrite(image_out, img_out)
 
