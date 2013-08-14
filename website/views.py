@@ -159,7 +159,7 @@ def _create_timelines(cards, mirror, timeline_item):
     card_template = """
     <article>
         <figure>
-            <img src="attachment:1">
+            <img src="attachment:1" height="360" width="240">
         </figure>
         <section>
             <h1 style="color:yellow">Power Level:</h1>
@@ -172,7 +172,7 @@ def _create_timelines(cards, mirror, timeline_item):
     <article>
         <section>
             <h1 style="color:yellow;text-align:center">No lifeforms</h1>
-            <h1 style="color:yellow;text-align:center">Detected</h1>
+            <h1 style="color:yellow;text-align:center">scouted</h1>
         </section>
     </article>
     """
