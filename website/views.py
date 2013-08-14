@@ -148,6 +148,7 @@ def subscription_reply(request):
     # print "list timeline", mirror.list_timeline()[0]
     item = mirror.parse_notification(request.body)
     timeline_item = item.timeline
+    timeline_item.notify = True
     # print "TA", timeline_item.attachments
     attachment = mirror.get_timeline_attachment(timeline_item)
     # print "attach", type(attachment), attachment
