@@ -6,6 +6,7 @@ import random
 import io
 import Image
 import os
+import logging
 # from apiclient.http import MediaIoBaseUpload
 
 """
@@ -13,6 +14,8 @@ Rectangles are coordinates of upper left and lower right corners.
 Colors are in BGR??
 """
 
+
+logger = logging.getLogger('debugger')
 
 # Ratio of width to height of timeline images.
 RATIO = 0.66
@@ -28,7 +31,6 @@ def face_detect(img, cascade_fn='haarcascades/haarcascade_frontalface_alt.xml',
     rects = cascade.detectMultiScale(img, scaleFactor=scaleFactor,
                                      minNeighbors=minNeighbors,
                                      minSize=minSize, flags=flags)
-    print "RECT", rects
     if len(rects) == 0:
         return []
     rects[:, 2:] += rects[:, :2]
@@ -51,7 +53,6 @@ def draw_circles(img, circles, color):
     for rect in circles:
         center = center_of_rectangle(rect)
         radius = radius_of_rectangle(rect)
-        print "RCR", rect, center, radius
         cv2.circle(img, center, int(radius * .75), color, thickness=20)
 
 
@@ -106,9 +107,7 @@ def slice_face(rect, img, store_faces_path):
     # Extra bit to add on to the top and bottom of image so we get an image of
     # appropriate height for our card.
     extra_crop = width / 4
-    print "hxw", height, width
     filename = '%030x' % random.randrange(16 ** 30)
-    print filename
     file_path = os.path.join(store_faces_path, filename + '.jpg')
     cv2.imwrite('/tmp/{0}.jpg'.format(filename), img[rect[1] -
                 extra_crop:rect[3] + extra_crop, rect[0]:rect[2]])
@@ -136,7 +135,6 @@ def scout(image_in, store_faces_path='/tmp/'):
     """
     Returns an array of tuples in the form (filename, power level)
     """
-    print ">>> Loading image..."
     # Save it, then read it in. What a pain.
     # filename = '%030x' % random.randrange(16**30)
     # with open('/tmp/{0}.jpg'.format(filename), 'w') as f:
@@ -145,21 +143,19 @@ def scout(image_in, store_faces_path='/tmp/'):
     img_color = cv2.imread(image_in)
     img_gray = cv2.cvtColor(img_color, cv.CV_RGB2GRAY)
     img_gray = cv2.equalizeHist(img_gray)
-    print image_in, img_gray.shape
-
-    print ">>> Detecting faces..."
     start = time.time()
     rects = face_detect(img_gray)
-    print 'rects', rects
-    end = time.time()
-    print 'time:', end - start
     img_out = img_color.copy()
     faces = []
     cards = []
     for rect in rects:
         faces.append(slice_face(rect, img_out, store_faces_path))
     for face in faces:
-        cards.append({'power_level': power_level(face), 'face': face})
+        power_level = power_level(face)
+        cards.append({'power_level': power_level, 'face': face})
+        logger.debug("Wrote face to {0} from original image {1} with power level: {2}".format(image_in, face, power_level))
+    end = time.time()
+    logger.debug("Found {0} face(s) in {1} seconds".format(len(cards, end-start)))
     return cards
     # cv2.imwrite(image_out, img_out)
 

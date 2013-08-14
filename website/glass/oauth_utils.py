@@ -17,15 +17,12 @@ def get_auth_url(request, redirect_uri='http://localhost:8000/oauth/google/redir
     kwargs = {'access_type': 'offline',
      'approval_prompt': 'force'}
     url = flow.step1_get_authorize_url()
-    print "auth url", url
     return url
 
 def process_oauth_redirect(request, post_auth_redirect='/', client_secrets_filename=None, redirect_uri=None):
     # if not xsrfutil.validate_token(settings.SECRET_KEY, request.REQUEST['state'], request.user):
         # return  HttpResponseBadRequest("State did not validate.")
     flow = _get_flow(client_secrets_filename=client_secrets_filename, redirect_uri=redirect_uri)
-    print flow
-    print request.REQUEST
     cred = flow.step2_exchange(request.REQUEST)
     if not request.user.is_authenticated():
         # Create a new user automagically.
@@ -39,7 +36,6 @@ def process_oauth_redirect(request, post_auth_redirect='/', client_secrets_filen
         login(request, user)
     else:
         user = request.user
-    print "Cred", cred
     credential = GoogleCredential.from_json(cred.to_json(), request.user)
     return HttpResponseRedirect(post_auth_redirect)
 
@@ -87,7 +83,6 @@ def _get_client_secrets(filename=None):
     except Exception as e:
         raise Exception("Could not read JSON data from client secrets file: {0} because {1}".format(json_file, e))
     try:
-        print data
         client_id = data['web']['client_id']
         client_secret = data['web']['client_secret']
     except ValueError:
@@ -99,9 +94,7 @@ def _get_flow(redirect_uri='http://localhost:8000/oauth/google/redirect/', clien
     Generates a server flow to obtain an oauth secret.
     Scope is a list of scopes required for this oauth key. Defaults to
     """
-    # print "redir_uri", redirect_uri
     scope = getattr(settings, 'GOOGLE_SCOPE', None)
-    print "Scope", scope
     if scope is None:
         raise OauthException("No scope provided.")
     # If we're using default redirect URI, check the settings file for a better default.

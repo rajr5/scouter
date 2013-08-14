@@ -38,7 +38,6 @@ def homepage(request):
         template_data['auth_url'] = oauth_utils.get_auth_url(request, client_secrets_filename=client_secrets_filename, redirect_uri=settings.GOOGLE_REDIRECT_URI)
         return render_to_response('login.html', template_data, context_instance=RequestContext(request))
         # return HttpResponseRedirect()
-    print request.user.id
     mirror = _get_mirror(request.user.id)
     _register_glass_app(mirror, request.user.id)
     return render_to_response('home.html', context_instance=RequestContext(request))
@@ -58,8 +57,6 @@ def _get_mirror(user_id):
         raise ValueError("User {0} has no GoogleCredential".format(user_id))
     oauth_credentials = google_credentials.oauth2credentials()
     mirror = Mirror.from_credentials(oauth_credentials)
-    if google_credentials.needs_refresh():
-        print "trying refresh", oauth_credentials.refresh_token
     google_credentials.refresh(http=mirror.http)
     return mirror
 
@@ -73,8 +70,6 @@ def _register_glass_app(mirror, id):
     Create a Contact object and add it to the user's Glass. Then subscribe to notifications from that contact.
     """
     contacts = mirror.list_contacts()
-    for contact in contacts:
-        print "contact", contact.id
     # if len(contacts) == 0:
     mirror.clear_contacts()
     if settings.ENV == "production":
@@ -93,7 +88,6 @@ def _register_glass_app(mirror, id):
 def clear_contacts(request):
     credentials = _get_credentials(request.user.id)
     mirror = _get_mirror(request.user.id)
-    print "got service"
     mirror.clear_contacts()
     return HttpResponse("Clear!")
 
@@ -114,8 +108,6 @@ def _get_credentials(id):
 
 
 def _get_token(id):
-    # print "token id", id
-
     account = SocialAccount.objects.get(user=id)
     token = SocialToken.objects.get(account=account.id)
     return token
@@ -128,37 +120,28 @@ def subscription_reply(request):
     debug_logger.debug(request.META)
     debug_logger.debug(request.body)
     # Get user id
-    # print "Req body", request.body
-    print request.POST
     try:
         post = json.loads(request.body)
     except Exception:
         debug_logger.exception("Couldn't load request.body")
         post = dict(request.POST)
-    print "post", post.items()
     user_id = post['userToken']
     user = User.objects.get(id=user_id)
     try:
         mirror = _get_mirror(user_id)
     except ValueError:
         return HttpResponseBadRequest("Need valid userToken")
-    for m in mirror.list_timeline():
-        print m.id
 
-    # print "list timeline", mirror.list_timeline()[0]
+
     item = mirror.parse_notification(request.body)
     timeline_item = item.timeline
     timeline_item.notify = True
-    # print "TA", timeline_item.attachments
     attachment = mirror.get_timeline_attachment(timeline_item)
-    # print "attach", type(attachment), attachment
     full_image_filename = os.path.join(settings.PROJECT_ROOT, 'scouter/static/posted_images/', '%030x.jpg' % random.randrange(16**30))
 
     with open(full_image_filename, 'w') as f:
         f.write(attachment)
-    # print "Attachment", attachment
     cards = scout(full_image_filename, os.path.join(settings.PROJECT_ROOT, 'scouter/static/posted_images/'))
-    # print "Power levels", cards
     try:
         timeline = _create_timelines(cards, mirror, timeline_item)
     except Exception:
