@@ -151,9 +151,9 @@ def scout(image_in, store_faces_path='/tmp/'):
     for rect in rects:
         faces.append(slice_face(rect, img_out, store_faces_path))
     for face in faces:
-        power_level = power_level(face)
-        cards.append({'power_level': power_level, 'face': face})
-        logger.debug("Wrote face to {0} from original image {1} with power level: {2}".format(image_in, face, power_level))
+        power = power_level(face)
+        cards.append({'power_level': power, 'face': face})
+        logger.debug("Wrote face to {0} from original image {1} with power level: {2}".format(image_in, face, power))
     end = time.time()
     logger.debug("Found {0} face(s) in {1} seconds".format(len(cards, end-start)))
     return cards
