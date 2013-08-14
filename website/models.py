@@ -17,6 +17,9 @@ import datetime
 from oauth2client.client import OAuth2Credentials
 from django.utils.timezone import utc
 import logging
+import os
+from django.conf import settings
+
 
 logger = logging.getLogger("debugger")
 
@@ -104,6 +107,21 @@ class GoogleCredential(models.Model):
             "refresh_token": self.refresh_token,
         }
         return OAuth2Credentials(**kwargs)
+
+
+class ScoutedPerson(models.Model):
+    """
+    Represents a scouted person. Used to make the map of scouted people.
+    """
+    # The filename of the face (just the unique portion. Call face_path to get the absolute path.s
+    face = models.CharField(max_length=30)
+    # Location picture was taken at. Should be geodjango fields, but I'm being lazy to test a feature.
+    lat = models.CharField(max_length=128)
+    lat = models.CharField(max_length=128)
+
+
+    def face_path(self):
+        return os.path.join(settings.PROJECT_DIR, 'scouter/static/faces/', self.face + '.jpg')
 
 
 class CredentialsAdmin(admin.ModelAdmin):

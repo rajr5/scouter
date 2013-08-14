@@ -135,6 +135,23 @@ class Mirror(object):
         self.service.timeline().attachments().insert(
         itemId=timeline_item.id, media_body=media_body).execute()
 
+    def list_locations(self):
+        locations = []
+        locs = self.service.locations().list().execute()
+        for l in locs:
+            locations.append(Location.from_json(self.service, l))
+        return locations
+
+    def locations_on_map(self, locations):
+        """
+        Given locations and some parameters, create a map of them.
+        @param locations:
+        @type locations:
+        @return:
+        @rtype:
+        """
+        pass
+
     def post_contact(self, contact):
         """
         Posts a contact/service that the user will be able to share with
@@ -543,6 +560,61 @@ class Contact(object):
         return body
 
 
+class Location(object):
+    """
+    An object representing the latest location.
+    """
+    # Stores historical locations
+
+    def __init__(self, service, location_id="latest"):
+        self.service = service
+        if location_id is None:
+            return
+        self.get_location(location_id=location_id)
+
+    def get_location(self, location_id="latest"):
+        """
+        Get the latest location and store it in the Location object.
+        @param location_id: The location_id specified by Google in the subscription notice. Defaults to latest
+        @type location_id:
+        @return:
+        @rtype:
+        """
+        location = self.service.locations().get(id=location_id).execute()
+        self.latitude = location.get('latitude', None)
+        self.longitude = location.get('longitude', None)
+        self.accuracy = location.get('accuracy', None)
+        self.displayName = location.get('displayName', None)
+        self.address = location.get('address', None)
+        self.id = location.get('id', None)
+        self.timestamp = location.get('timestamp', None)
+        return location
+
+    def on_map(self, height, width):
+        """
+        Displays this location on a map.
+        @param height:
+        @type height:
+        @param width:
+        @type width:
+        @return:
+        @rtype:
+        """
+        pass
+
+    @classmethod
+    def from_json(cls, service, location):
+        cls.__init__(service, None)
+        cls.latitude = location.get('latitude', None)
+        cls.longitude = location.get('longitude', None)
+        cls.accuracy = location.get('accuracy', None)
+        cls.displayName = location.get('displayName', None)
+        cls.address = location.get('address', None)
+        cls.id = location.get('id', None)
+        cls.timestamp = location.get('timestamp', None)
+        return cls
+
+
 
 
 
@@ -557,6 +629,9 @@ class Contact(object):
 #         media = open(filename).read()
 #         self.media_body = MediaIoBaseUpload(io.BytesIO(media), mimetype=content_type, resumable=True)
 
+
+
 if __name__ == '__main__':
     mirror = Mirror()
     mirror.get_my_oauth()
+

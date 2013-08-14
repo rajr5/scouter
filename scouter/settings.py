@@ -6,7 +6,8 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 LOG_DIR = os.path.abspath(os.path.join(PROJECT_ROOT, 'logs_dev'))
 
 GOOGLE_SCOPE = ['https://www.googleapis.com/auth/userinfo.profile',
-                'https://www.googleapis.com/auth/glass.timeline']
+                'https://www.googleapis.com/auth/glass.timeline',
+                'https://www.googleapis.com/auth/glass.location']
 env = os.environ.get('ENV', 'local')
 print env
 ENV = 'dev'

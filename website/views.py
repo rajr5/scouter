@@ -154,7 +154,7 @@ def subscription_reply(request):
     # print "TA", timeline_item.attachments
     attachment = mirror.get_timeline_attachment(timeline_item)
     # print "attach", type(attachment), attachment
-    full_image_filename = os.path.join(settings.PROJECT_DIR, 'scouter/static/posted_images/', '%030x.jpg' % random.randrange(16**30))
+    full_image_filename = os.path.join(settings.PROJECT_ROOT, 'scouter/static/posted_images/', '%030x.jpg' % random.randrange(16**30))
 
     with open(full_image_filename, 'w') as f:
         f.write(attachment)
