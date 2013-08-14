@@ -74,7 +74,7 @@ def _register_glass_app(mirror, id):
         print "contact", contact.id
     # if len(contacts) == 0:
     mirror.clear_contacts()
-    if settings.environment == "production":
+    if settings.ENV == "production":
         display_name = "Scouter"
     else:
         display_name = "Scouter Dev"

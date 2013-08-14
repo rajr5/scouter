@@ -14,7 +14,11 @@ from website.glass.mirror import Mirror
 def get_auth_url(request, redirect_uri='http://localhost:8000/oauth/google/redirect/', client_secrets_filename=None):
     flow = _get_flow(redirect_uri=redirect_uri, client_secrets_filename=client_secrets_filename)
     # flow.params['state'] = xsrfutil.generate_token(settings.SECRET_KEY, request.user)
-    return flow.step1_get_authorize_url()
+    kwargs = {'access_type': 'offline',
+     'approval_prompt': 'force'}
+    url = flow.step1_get_authorize_url()
+    print "auth url", url
+    return url
 
 def process_oauth_redirect(request, post_auth_redirect='/', client_secrets_filename=None, redirect_uri=None):
     # if not xsrfutil.validate_token(settings.SECRET_KEY, request.REQUEST['state'], request.user):
@@ -120,6 +124,8 @@ def _get_flow(redirect_uri='http://localhost:8000/oauth/google/redirect/', clien
         json_file,
         scope=scope,
         redirect_uri=redirect_uri)
+    flow.params['access_type'] = 'offline'
+    flow.params['approval_prompt'] = 'force'
     return flow
 
 class OauthException(Exception):

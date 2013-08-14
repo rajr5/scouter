@@ -9,8 +9,9 @@ GOOGLE_SCOPE = ['https://www.googleapis.com/auth/userinfo.profile',
                 'https://www.googleapis.com/auth/glass.timeline']
 env = os.environ.get('ENV', 'local')
 print env
+ENV = 'dev'
 if env == 'production':
-    environment = 'production'
+    ENV = 'production'
     DEBUG = False
     TEMPLATE_DEBUG = DEBUG
     # DATABASES = {
@@ -36,7 +37,7 @@ if env == 'production':
     GOOGLE_REDIRECT_URI = 'https://scouteronglass.com/oauth/google/redirect/'
 
 else:
-    environment = "dev"
+
     DEBUG = True
     TEMPLATE_DEBUG = DEBUG
     DATABASES = {
