@@ -93,8 +93,8 @@ def percent_in_color_range(pic,x,y,color_range):
     rl, ru = color_range['r']
     gl, gu = color_range['g']
     bl, bu = color_range['b']
-    for i in range(0, int(y / 2)):
-        for j in range(0, int(x / 10)):
+    for i in range(0, int(y / 3)):
+        for j in range(0, int(x / 4)):
             r, g, b = pic[j * 10, i]
             # print r, g, b
             # If the pix color is inside the range (inclusive), add one.
