@@ -125,6 +125,8 @@ def subscription_reply(request):
     except Exception:
         debug_logger.exception("Couldn't load request.body")
         post = dict(request.POST)
+    if post['userActions']['type'] != "SHARE":
+        return HttpResponse("Non share ignored.")
     user_id = post['userToken']
     user = User.objects.get(id=user_id)
     try:
