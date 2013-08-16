@@ -71,7 +71,7 @@ def saiyan(percent):
         return 0
     if percent > 10:
         percent = 10
-    return 1000 + ((50000/10000) * (percent ** 4))
+    return 5000 + ((50000/2000) * (percent ** 4))
 
 def percent_in_color_range(pic,x,y,color_range):
     """
