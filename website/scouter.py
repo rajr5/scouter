@@ -93,9 +93,9 @@ def percent_in_color_range(pic,x,y,color_range):
     rl, ru = color_range['r']
     gl, gu = color_range['g']
     bl, bu = color_range['b']
-    for i in range(0, int(y / 10)):
-        for j in range(0, int(x / 2)):
-            r, g, b = pic[j, i * 10]
+    for i in range(0, int(y / 2)):
+        for j in range(0, int(x / 10)):
+            r, g, b = pic[j * 10, i]
             # print r, g, b
             # If the pix color is inside the range (inclusive), add one.
             if rl <= r <= ru and gl <= g <= gu and bl <= b <= bu:
@@ -135,7 +135,7 @@ def power_level(face):
     if power < 1000:
         return random.randint(1,206)
     else:
-        return power
+        return int(power)
 
 
 def face_detect(img, cascade_fn='haarcascades/haarcascade_frontalface_alt.xml',
