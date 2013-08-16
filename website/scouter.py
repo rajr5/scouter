@@ -101,6 +101,7 @@ def percent_in_color_range(pic,x,y,color_range):
             if rl <= r <= ru and gl <= g <= gu and bl <= b <= bu:
                 color_px += 1
             total_px += 1
+    logger.debug("Percent in color, color: {0}, total: {1}, returning: {2}".format(color_px, total_px, color_px / total_px * 100))
     return color_px / total_px * 100
 
 
