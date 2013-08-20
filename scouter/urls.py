@@ -20,10 +20,11 @@ urlpatterns = patterns('',
 
 urlpatterns += patterns('website.views',
                         url(r'^$', 'homepage'),
+                        url(r'install/$', 'install'),
                         url(r'^oauth2callback/$', 'callback'),
                         url(r'^auth_return/$', 'auth_return'),
                         url(r'^clear_contacts/$', 'clear_contacts'),
                         url(r'^mirror/subscription/reply/$',
                             'subscription_reply'),
-                        url(r'^oauth/', include('website.urls'))
+                        url(r'^oauth/', include('website.urls')),
                         )

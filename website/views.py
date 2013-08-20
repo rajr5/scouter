@@ -38,6 +38,7 @@ def homepage(request):
         template_data['auth_url'] = oauth_utils.get_auth_url(request, client_secrets_filename=client_secrets_filename, redirect_uri=settings.GOOGLE_REDIRECT_URI)
         return render_to_response('login.html', template_data, context_instance=RequestContext(request))
         # return HttpResponseRedirect()
+    return HttpResponseRedirect('/install/')
 
 def install(request):
     template_data = {}
