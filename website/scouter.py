@@ -71,9 +71,9 @@ def saiyan(percent):
         return 0
     if percent > 10:
         percent = 10
-    return 5000 + ((50000/2000) * (percent ** 4))
+    return 5000 + ((50/2) * (percent ** 4))
 
-def percent_in_color_range(pic,x,y,color_range):
+def percent_in_color_range(pic, x, y, color_range):
     """
     Checks each pixel to see if its rgb color is between all the upper and lower bounds in color_range. Returns
     a percent of the image that is in the range from 0 to 100.
@@ -94,7 +94,7 @@ def percent_in_color_range(pic,x,y,color_range):
     rl, ru = color_range['r']
     gl, gu = color_range['g']
     bl, bu = color_range['b']
-    for i in range(0, int(y)):
+    for i in range(0, int(y/2)):
         for j in range(0, int(x)):
             r, g, b = pic[j, i]
             # print r, g, b
@@ -103,7 +103,8 @@ def percent_in_color_range(pic,x,y,color_range):
                 color_px += 1
             total_px += 1
     end = time.time()
-    logger.debug("Percent in color, color: {0}, total: {1}, returning: {2}. Took {3} seconds".format(color_px, total_px, color_px / total_px * 100, end - start))
+    logger.debug("Percent in color, color: {0}, total: {1}, returning: {2}. Took {3} seconds".format(color_px, total_px,
+        color_px / total_px * 100, end - start))
     return color_px / total_px * 100
 
 

@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static "css/scouter.css" %}">
 
 
@@ -11,15 +11,26 @@
     {% endblock %}
 </head>
 <body>
+    <nav class="navbar navbar-default" role="navigation">
+    <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+
+        </button>
+        <a class="navbar-brand" href="#">Scouter For Glass</a>
+      </div>
+    </nav>
     {% block content %}
     <h1>Scouter on Glass</h1>
     {% endblock %}
     <footer class="text-center">
-        Copyright <a href="http://servercobra.com/">Josh Gachnang</a>, 2013.
+        <p>Found an issue? <a href="http://github.com/pcsforeducation/scouter.git">Submit an issue on GitHub!</a></p>
+        <p>Copyright <a href="http://servercobra.com/">Josh Gachnang</a>, 2013.</p>
+        <p>Follow me on <a href="http://twitter.com/servercobra">Twitter</a> or <a href="https://plus.google.com/117418434988851440505/posts">Google+</a></p>
     </footer>
     <!-- Begin Javascript imports -->
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/js/bootstrap.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
