@@ -81,7 +81,8 @@ def subscription_reply(request):
 
 
 def oauth_redirect(request):
-    return oauth_utils.process_oauth_redirect(request, client_secrets_filename=client_secrets_filename, redirect_uri=settings.GOOGLE_REDIRECT_URI)
+    return oauth_utils.process_oauth_redirect(request, client_secrets_filename=client_secrets_filename,
+                                              redirect_uri=settings.GOOGLE_REDIRECT_URI, post_auth_redirect='/install/')
 
 
 @login_required

@@ -14,8 +14,10 @@ from website.glass.mirror import Mirror
 def get_auth_url(request, redirect_uri='http://localhost:8000/oauth/google/redirect/', client_secrets_filename=None):
     flow = _get_flow(redirect_uri=redirect_uri, client_secrets_filename=client_secrets_filename)
     # flow.params['state'] = xsrfutil.generate_token(settings.SECRET_KEY, request.user)
-    kwargs = {'access_type': 'offline',
-     'approval_prompt': 'force'}
+    kwargs = {
+        'access_type': 'offline',
+        'approval_prompt': 'force'
+    }
     url = flow.step1_get_authorize_url()
     return url
 

@@ -4,25 +4,27 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 admin.autodiscover()
 
-urlpatterns = patterns('',
-                       # Examples:
-                       # url(r'^$', 'scouter.views.home', name='home'),
+urlpatterns = patterns(
+    '',
+    # Examples:
+    # url(r'^$', 'scouter.views.home', name='home'),
 
-                       # Uncomment the admin/doc line below to enable admin
-                       # documentation:
-                       url(r'^admin/doc/', include(
-                           'django.contrib.admindocs.urls')),
+    # Uncomment the admin/doc line below to enable admin
+    # documentation:
+    url(r'^admin/doc/', include(
+       'django.contrib.admindocs.urls')),
 
-                       # Uncomment the next line to enable the admin:
-                       url(r'^admin/', include(admin.site.urls)),
-                      (r'^accounts/', include('allauth.urls')),
-                       )
+    # Uncomment the next line to enable the admin:
+    url(r'^admin/', include(admin.site.urls)),
+    # All other requests go to website.urls.
+)
 
-urlpatterns += patterns('website.views',
-                        url(r'^$', 'homepage'),
-                        url(r'install/$', 'install'),
-                        url(r'^clear_contacts/$', 'clear_contacts'),
-                        url(r'^mirror/subscription/reply/$',
-                            'subscription_reply'),
-                        url(r'^oauth/', include('website.urls')),
-                        )
+urlpatterns += patterns(
+    'website.views',
+    url(r'^oauth/google/redirect/', 'oauth_redirect'),
+    url(r'^$', 'homepage'),
+    url(r'install/$', 'install'),
+    url(r'^clear_contacts/$', 'clear_contacts'),
+    url(r'^mirror/subscription/reply/$',
+       'subscription_reply'),
+)
