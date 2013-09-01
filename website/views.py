@@ -124,7 +124,7 @@ def _register_glass_app(mirror, id):
         display_name = "Scouter Dev"
     contact = Contact(
         display_name=display_name, id=id, image_urls=[
-            'https://scouteronglass.com/static/img/contact_img.png'],
+            'https://scouteronglass.com/static/img/contact_img1.png'],
         type="INDIVIDUAL", accept_types=["image/jpeg", "image/png"], priority=1)
     mirror.post_contact(contact)
     mirror.subscribe(callback_url='https://scouteronglass.com/mirror/subscription/reply/', subscription_type="reply", user_token=id)
