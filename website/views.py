@@ -61,12 +61,12 @@ def subscription_reply(request):
     except ValueError:
         return HttpResponseBadRequest("Need valid userToken")
 
-
     item = mirror.parse_notification(request.body)
     timeline_item = item.timeline
     timeline_item.notify = True
     attachment = mirror.get_timeline_attachment(timeline_item)
-    full_image_filename = os.path.join(settings.PROJECT_ROOT, 'scouter/static/posted_images/', '%030x.jpg' % random.randrange(16**30))
+    full_image_filename = os.path.join(
+        settings.PROJECT_ROOT, 'scouter/static/posted_images/', '%030x.jpg' % random.randrange(16 ** 30))
 
     with open(full_image_filename, 'w') as f:
         f.write(attachment)
@@ -124,10 +124,11 @@ def _register_glass_app(mirror, id):
         display_name = "Scouter Dev"
     contact = Contact(
         display_name=display_name, id=id, image_urls=[
-            'https://scouteronglass.com/static/img/contact_img1.png'],
+            'https://scouteronglass.com/static/img/contact_img2.png'],
         type="INDIVIDUAL", accept_types=["image/jpeg", "image/png"], priority=1)
     mirror.post_contact(contact)
-    mirror.subscribe(callback_url='https://scouteronglass.com/mirror/subscription/reply/', subscription_type="reply", user_token=id)
+    mirror.subscribe(
+        callback_url='https://scouteronglass.com/mirror/subscription/reply/', subscription_type="reply", user_token=id)
 
 
 def _get_credentials(id):

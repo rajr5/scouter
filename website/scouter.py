@@ -71,7 +71,8 @@ def saiyan(percent):
         return 0
     if percent > 10:
         percent = 10
-    return 5000 + ((50/2) * (percent ** 4))
+    return 5000 + ((50 / 2) * (percent ** 4))
+
 
 def percent_in_color_range(pic, x, y, color_range):
     """
@@ -94,7 +95,7 @@ def percent_in_color_range(pic, x, y, color_range):
     rl, ru = color_range['r']
     gl, gu = color_range['g']
     bl, bu = color_range['b']
-    for i in range(0, int(y/2)):
+    for i in range(0, int(y / 2)):
         for j in range(0, int(x)):
             r, g, b = pic[j, i]
             # print r, g, b
@@ -104,9 +105,8 @@ def percent_in_color_range(pic, x, y, color_range):
             total_px += 1
     end = time.time()
     logger.debug("Percent in color, color: {0}, total: {1}, returning: {2}. Took {3} seconds".format(color_px, total_px,
-        color_px / total_px * 100, end - start))
+                                                                                                     color_px / total_px * 100, end - start))
     return color_px / total_px * 100
-
 
 
 def power_level(face):
@@ -137,7 +137,7 @@ def power_level(face):
     # power = max(blond_power, black_power, red_power)
     power = black_power
     if power < 1000:
-        return random.randint(1,206)
+        return random.randint(1, 206)
     else:
         return int(power)
 
@@ -205,7 +205,7 @@ def scout(image_in, store_faces_path='/tmp/'):
         cards.append({'power_level': power, 'face': face})
         logger.debug("Wrote face to {0} from original image {1} with power level: {2}".format(image_in, face, power))
     end = time.time()
-    logger.debug("Found {0} face(s) in {1} seconds".format(len(cards), end-start))
+    logger.debug("Found {0} face(s) in {1} seconds".format(len(cards), end - start))
     return cards
     # cv2.imwrite(image_out, img_out)
 

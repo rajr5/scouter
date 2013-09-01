@@ -119,7 +119,6 @@ class ScoutedPerson(models.Model):
     lat = models.CharField(max_length=128)
     lat = models.CharField(max_length=128)
 
-
     def face_path(self):
         return os.path.join(settings.PROJECT_DIR, 'scouter/static/faces/', self.face + '.jpg')
 
