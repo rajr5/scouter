@@ -33,7 +33,7 @@ def homepage(request):
 
 def install(request):
     template_data = {}
-    debug_logger.debug("User id: {0}".format(request.user.id))
+    debug_logger.debug("Installing for user id: {0}".format(request.user.id))
     mirror = _get_mirror(request.user.id)
     _register_glass_app(mirror, request.user.id)
     # return HttpResponseRedirect('https://google.com/myglass')
