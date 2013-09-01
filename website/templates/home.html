@@ -1,9 +1,59 @@
 {% extends "site_base.html" %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block head_title %}{% trans "Sign In" %}{% endblock %}
 
 {% block content %}
+{#<div class="jumbotron col-lg-12">#}
+  <div class="container body_container">
+{#<div class="row body">#}
+{#    <div class="col-1g-12">#}
+    <h1 class="text-center title"><img class="logo" src="{% static "img/logo.png" %}">Scouter On Glass </h1>
+    <div class="row">
+        <div class="col-lg-4 step step1"><div class="step-inner">
+            <h3 class="step_number"><div class="label label-primary ">1</div></h3>
+            <h4 class="text-center">Take a picture and share it to Scouter</h4>
+{#            <p>Scouter On Glass finds the power levels of people in pictures you take with your Google Glass&trade;, similar to how the Scouter works in Dragon Ball Z. </p>#}
+{#            <p>Simply take a picture of the target, share it with the Scouter icon, and their power level will be reported in a few seconds. Be prepared to yell "IT'S OVER 9000!!!!".</p>#}
+        </div></div>
+        <div class="col-lg-4 step step2"><div class="step-inner">
+            <h3 class="step_number"><div class="label label-primary ">2</div></h3>
+            <h4 class="text-center">Scouter finds each person's power level</h4>
+        </div></div>
+        <div class="col-lg-4 step step3"><div class="step-inner">
+            <h3 class="step_number"><div class="label label-primary ">3</div></h3>
+            <h3 class="text-center">IT'S OVER 9000!!!</h3>
+            <iframe class="nine_thousand"  src="https://www.youtube.com/embed/SiMHTK15Pik?feature=player_embedded" frameborder="0" allowfullscreen></iframe>
+        </div></div>
+    </div>
+    <div class="row login-row">
+        <div class="col-lg-4"></div>
+        <div class="col-lg-4">
+          {% if user.is_authenticated %}
+          <h3 class="text-center">Thanks for installing Scouter on Glass!</h3>
+          <a href="https://glass.google.com/u/0/myglass"><button type="button" class="btn btn-danger btn-lg btn-block">Remove from Glass</button></a>
+          {% else %}
+          <a href="{{ auth_url }}"><button type="button" class="btn btn-primary btn-lg btn-block">Install On Glass</button></a>
+          {% endif %}
+        </div>
+    </div>
+</div>
 
-    <h1>Scouter on Glass</h1>
-    <p>Thanks for signing up! Take a picture of someone on your Glass and share it to "Scouter". You'll get a card back in a few seconds showing each face and their power level.</p>
-    <p>Warning: I am not liable if your Glass randomly explodes or you are compelled to crush it because of high power levels.</p>
-    <iframe width="420" height="315" src="//www.youtube.com/embed/SiMHTK15Pik" frameborder="0" allowfullscreen></iframe>
+
+
+
+
+
+
+</div>
+{#</div>#}
+
+
+
+
 {% endblock %}
+
+
+
+
