@@ -96,18 +96,18 @@ def clear_contacts(request):
 
 def logout_view(request):
     """
-    Log out the user, remove the contact from their Glass.
+    Log out the user
     @param request:
     @type request:
     @return:
     @rtype:
     """
-    try:
-        credentials = _get_credentials(request.user.id)
-        mirror = _get_mirror(request.user.id)
-        mirror.clear_contacts()
-    except Exception:
-        pass
+    # try:
+    #     credentials = _get_credentials(request.user.id)
+    #     mirror = _get_mirror(request.user.id)
+    #     mirror.clear_contacts()
+    # except Exception:
+    #     pass
     logout(request)
     return HttpResponseRedirect('/')
 
