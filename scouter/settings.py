@@ -25,20 +25,9 @@ if env == 'production':
     #         'PORT': os.environ.get('DB_PORT'),                      # Set to empty string for default. Not used with sqlite3.
     #     }
     # }
-    SOCIALACCOUNT_PROVIDERS = \
-        {'google':
-        {'SCOPE': ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/glass.timeline'],
-         'AUTH_PARAMS': {'access_type': 'offline',
-                         # 'redirect_uri': 'https://scouteronglass.com/accounts/google/login/callback/'
-
-                         },
-         'METHOD': 'oauth2'
-         }
-         }
     GOOGLE_REDIRECT_URI = 'https://scouteronglass.com/oauth/google/redirect/'
 
 else:
-
     DEBUG = True
     TEMPLATE_DEBUG = DEBUG
     DATABASES = {
@@ -51,13 +40,6 @@ else:
             'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
         }
     }
-    SOCIALACCOUNT_PROVIDERS = \
-        {'google':
-        {'SCOPE': ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/glass.timeline'],
-         'AUTH_PARAMS': {'access_type': 'offline',
-                         'approval_prompt': 'force'}
-         }
-         }
     GOOGLE_REDIRECT_URI = 'http://localhost:8000/oauth/google/redirect/'
 
 
