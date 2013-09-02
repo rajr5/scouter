@@ -102,9 +102,12 @@ def logout_view(request):
     @return:
     @rtype:
     """
-    credentials = _get_credentials(request.user.id)
-    mirror = _get_mirror(request.user.id)
-    mirror.clear_contacts()
+    try:
+        credentials = _get_credentials(request.user.id)
+        mirror = _get_mirror(request.user.id)
+        mirror.clear_contacts()
+    except Exception:
+        pass
     logout(request)
     return HttpResponseRedirect('/')
 
