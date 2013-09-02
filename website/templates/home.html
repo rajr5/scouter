@@ -36,6 +36,7 @@
           {% if user.is_authenticated %}
           <h3 class="text-center">Thanks for installing Scouter on Glass!</h3>
           <a href="https://glass.google.com/u/0/myglass"><button type="button" class="btn btn-danger btn-lg btn-block">Remove from Glass</button></a>
+          <p class="text-center">(Toggle the Scouter For Glass app to off to remove it)</p>
           {% else %}
           <a href="{{ auth_url }}"><button type="button" class="btn btn-primary btn-lg btn-block">Install On Glass</button></a>
           {% endif %}

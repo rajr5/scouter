@@ -9,6 +9,7 @@ from django.template import RequestContext
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
+from django.contrib.auth import logout
 from allauth.socialaccount.models import SocialAccount, SocialToken
 from website.models import GoogleCredential
 from website.glass.mirror import Mirror, Contact
@@ -91,6 +92,21 @@ def clear_contacts(request):
     mirror = _get_mirror(request.user.id)
     mirror.clear_contacts()
     return HttpResponse("Clear!")
+
+
+def logout_view(request):
+    """
+    Log out the user, remove the contact from their Glass.
+    @param request:
+    @type request:
+    @return:
+    @rtype:
+    """
+    credentials = _get_credentials(request.user.id)
+    mirror = _get_mirror(request.user.id)
+    mirror.clear_contacts()
+    logout(request)
+    return HttpResponseRedirect('/')
 
 
 def _get_mirror(user_id):

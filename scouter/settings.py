@@ -28,6 +28,7 @@ if env == 'production':
     GOOGLE_REDIRECT_URI = 'https://scouteronglass.com/oauth/google/redirect/'
 
 else:
+    ENV = 'dev'
     DEBUG = True
     TEMPLATE_DEBUG = DEBUG
     DATABASES = {

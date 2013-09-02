@@ -13,7 +13,7 @@ urlpatterns = patterns(
     # Uncomment the admin/doc line below to enable admin
     # documentation:
     url(r'^admin/doc/', include(
-       'django.contrib.admindocs.urls')),
+        'django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
@@ -28,6 +28,6 @@ urlpatterns += patterns(
     url(r'^$', 'homepage'),
     url(r'install/$', 'install'),
     url(r'^clear_contacts/$', 'clear_contacts'),
-    url(r'^mirror/subscription/reply/$',
-       'subscription_reply'),
+    url(r'^mirror/subscription/reply/$', 'subscription_reply'),
+    url(r'^logout/$', 'logout_view')
 )
