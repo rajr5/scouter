@@ -10,7 +10,7 @@ GOOGLE_SCOPE = ['https://www.googleapis.com/auth/userinfo.profile',
                 'https://www.googleapis.com/auth/glass.location']
 env = os.environ.get('ENV', 'local')
 print env
-ENV = 'dev'
+# ENV = 'dev'
 if env == 'production':
     ENV = 'production'
     DEBUG = False
