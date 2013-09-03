@@ -113,7 +113,7 @@ class ScoutedPerson(models.Model):
     def face_path(self):
         if self.face is None:
             return None
-        return os.path.join(settings.PROJECT_ROOT, 'scouter/static/faces/', self.face + '.jpg')
+        return os.path.join('/static/faces/', self.face + '.jpg')
 
     def original_path(self):
-        return os.path.join(settings.PROJECT_ROOT, 'scouter/static/posted_images/', self.original + '.jpg')
+        return os.path.join('/static/posted_images/', self.original + '.jpg')
