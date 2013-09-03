@@ -73,12 +73,13 @@ def subscription_reply(request):
     timeline_item.notify = True
     attachment = mirror.get_timeline_attachment(timeline_item)
     # Create a random, 30 character filename to write the image to.
+    filename = '%030x.jpg' % random.randrange(16 ** 30)
     full_image_filename = os.path.join(
-        settings.PROJECT_ROOT, 'scouter/static/posted_images/', '%030x.jpg' % random.randrange(16 ** 30))
+        settings.PROJECT_ROOT, 'scouter/static/posted_images/', filename)
     with open(full_image_filename, 'w') as f:
         f.write(attachment)
     # Find all the faces.
-    cards = scout(full_image_filename, os.path.join(settings.PROJECT_ROOT, 'scouter/static/posted_images/'))
+    cards = scout(full_image_filename, os.path.join(settings.PROJECT_ROOT, 'scouter/static/faces/'))
     try:
         timeline = _create_timelines(cards, mirror, timeline_item)
     except Exception:
@@ -87,9 +88,9 @@ def subscription_reply(request):
     # Save the old image and the new image as an object for display later.
     try:
         if len(cards) > 0:
-            scouted_person = ScoutedPerson(face=cards[0]['face'], original=full_image_filename, user=user)
+            scouted_person = ScoutedPerson(face=cards[0]['face'], original=filename, user=user)
         else:
-            scouted_person = ScoutedPerson(face=None, original=full_image_filename, user=user)
+            scouted_person = ScoutedPerson(face=None, original=filename, user=user)
         scouted_person.save()
     except Exception:
         debug_logger.exception("Problem saving ScoutedPerson")
