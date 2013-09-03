@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
 from allauth.socialaccount.models import SocialAccount, SocialToken
-from website.models import GoogleCredential
+from website.models import GoogleCredential, ScoutedPerson
 from website.glass.mirror import Mirror, Contact
 from scouter import scout
 from glass import oauth_utils
@@ -47,14 +47,18 @@ def subscription_reply(request):
     # debug_logger.debug(request.POST)
     # debug_logger.debug(request.META)
     # debug_logger.debug(request.body)
-    # Get user id
+
+    # Load the payload from Google
     try:
         post = json.loads(request.body)
     except Exception:
         debug_logger.exception("Couldn't load request.body")
         post = dict(request.POST)
-    if post['userActions'][0]['type'] != "SHARE":
+    # We only care if something was shared to us. If they deleted something, we don't care for now.
+    if 'userActions' not in post or post['userActions'][0]['type'] != "SHARE":
         return HttpResponse("Non share ignored.")
+
+    # Find the user that shared it to us.
     user_id = post['userToken']
     user = User.objects.get(id=user_id)
     try:
@@ -62,21 +66,34 @@ def subscription_reply(request):
     except ValueError:
         return HttpResponseBadRequest("Need valid userToken")
 
+    # Ask our mirror library to parse the notification for us, returning a timeline item we can use and the shared
+    # image.
     item = mirror.parse_notification(request.body)
     timeline_item = item.timeline
     timeline_item.notify = True
     attachment = mirror.get_timeline_attachment(timeline_item)
+    # Create a random, 30 character filename to write the image to.
     full_image_filename = os.path.join(
         settings.PROJECT_ROOT, 'scouter/static/posted_images/', '%030x.jpg' % random.randrange(16 ** 30))
-
     with open(full_image_filename, 'w') as f:
         f.write(attachment)
+    # Find all the faces.
     cards = scout(full_image_filename, os.path.join(settings.PROJECT_ROOT, 'scouter/static/posted_images/'))
     try:
         timeline = _create_timelines(cards, mirror, timeline_item)
     except Exception:
         debug_logger.exception("Could not create the timeline card.")
         raise
+    # Save the old image and the new image as an object for display later.
+    try:
+        if len(cards) > 0:
+            scouted_person = ScoutedPerson(face=cards[0]['face'], original=full_image_filename, user=request.user.id)
+        else:
+            scouted_person = ScoutedPerson(face=None, original=full_image_filename, user=request.user.id)
+        scouted_person.save()
+    except Exception:
+        debug_logger.exception("Problem saving ScoutedPerson")
+    # Update the returned card.
     mirror.update_timeline(timeline)
     return HttpResponse('OK')
 

@@ -114,10 +114,12 @@ class ScoutedPerson(models.Model):
     Represents a scouted person. Used to make the map of scouted people.
     """
     # The filename of the face (just the unique portion. Call face_path to get the absolute path.s
-    face = models.CharField(max_length=30)
+    face = models.CharField(max_length=30, blank=True, null=True)
+    original = models.CharField(max_length=30)
     # Location picture was taken at. Should be geodjango fields, but I'm being lazy to test a feature.
-    lat = models.CharField(max_length=128)
-    lat = models.CharField(max_length=128)
+    lat = models.CharField(max_length=128, blank=True, null=True, default=None)
+    lat = models.CharField(max_length=128, blank=True, null=True, default=None)
+    user = models.ForeignKey(User)
 
     def face_path(self):
         return os.path.join(settings.PROJECT_DIR, 'scouter/static/faces/', self.face + '.jpg')
