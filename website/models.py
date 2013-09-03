@@ -1,24 +1,12 @@
-from django.db import models
 import json
-# from oauth2client.django_orm import FlowField
-from django.contrib.auth.models import User
-from django.db import models
-from oauth2client.django_orm import FlowField
-from django.db import models
-# from oauth2client.django_orm import FlowField
-from django.contrib.auth.models import User
-from django.contrib.auth.models import User
-from django.db import models
-from oauth2client.django_orm import FlowField, CredentialsField
-from oauth2client.django_orm import Storage
-from django.contrib import admin
-from oauth2client.client import Credentials
 import datetime
-from oauth2client.client import OAuth2Credentials
-from django.utils.timezone import utc
 import logging
 import os
+from django.db import models
+from django.utils.timezone import utc
+from django.contrib.auth.models import User
 from django.conf import settings
+from oauth2client.client import OAuth2Credentials
 
 
 logger = logging.getLogger("debugger")
@@ -124,9 +112,3 @@ class ScoutedPerson(models.Model):
     def face_path(self):
         return os.path.join(settings.PROJECT_DIR, 'scouter/static/faces/', self.face + '.jpg')
 
-
-class CredentialsAdmin(admin.ModelAdmin):
-    pass
-
-admin.site.register(GoogleCredential, CredentialsAdmin)
-admin.site.register(ScoutedPerson)
