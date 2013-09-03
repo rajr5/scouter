@@ -87,9 +87,9 @@ def subscription_reply(request):
     # Save the old image and the new image as an object for display later.
     try:
         if len(cards) > 0:
-            scouted_person = ScoutedPerson(face=cards[0]['face'], original=full_image_filename, user=request.user.id)
+            scouted_person = ScoutedPerson(face=cards[0]['face'], original=full_image_filename, user=user)
         else:
-            scouted_person = ScoutedPerson(face=None, original=full_image_filename, user=request.user.id)
+            scouted_person = ScoutedPerson(face=None, original=full_image_filename, user=user)
         scouted_person.save()
     except Exception:
         debug_logger.exception("Problem saving ScoutedPerson")
