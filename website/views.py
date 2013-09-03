@@ -1,8 +1,9 @@
 import random
 import logging
 import json
+from django.forms import model_to_dict
 import os
-from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponse, HttpResponseNotFound
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -129,6 +130,17 @@ def logout_view(request):
     logout(request)
     return HttpResponseRedirect('/')
 
+
+def person(request, person_id):
+    template_data = {}
+    try:
+        sp = ScoutedPerson.objects.get(id=person_id)
+        template_data['person'] = model_to_dict(sp)
+        template_data['person']['face_path'] = sp.face_path()
+        template_data['person']['original_path'] = sp.original_path()
+    except ScoutedPerson.DoesNotExist:
+        return HttpResponseNotFound("Could not find scouted person with ID: {0}".format(person_id))
+    return render_to_response("person.html", template_data, context_instance=RequestContext(request))
 
 def _get_mirror(user_id):
     """

@@ -28,5 +28,6 @@ urlpatterns += patterns(
     url(r'install/$', 'install'),
     url(r'^clear_contacts/$', 'clear_contacts'),
     url(r'^mirror/subscription/reply/$', 'subscription_reply'),
-    url(r'^logout/$', 'logout_view')
+    url(r'^logout/$', 'logout_view'),
+    url(r'^person/(?P<person_id>\d+)/$', 'person')
 )

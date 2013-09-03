@@ -1,0 +1,12 @@
+{% extends "site_base.html" %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block head_title %}{% trans "Sign In" %}{% endblock %}
+
+{% block content %}
+<h3>Power level: {{ person.power_level }}</h3>
+<img src="{{ person.face_path }}">
+<p>Original:</p>
+<img src="{{ person.original_path }}">
+{% endblock %}

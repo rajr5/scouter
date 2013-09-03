@@ -466,6 +466,7 @@ class Timeline(object):
         Adds a menu item to the timeline card.
         Accepts either a string for a default menu item (must be in DEFAULT_MENU_ITEMS), or a TimelineMenuItem.
         """
+        pass
 
     def __str__(self):
         return str(self.id)
