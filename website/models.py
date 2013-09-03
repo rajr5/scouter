@@ -111,7 +111,7 @@ class ScoutedPerson(models.Model):
     user = models.ForeignKey(User)
 
     def face_path(self):
-        return os.path.join(settings.PROJECT_DIR, 'scouter/static/faces/', self.face + '.jpg')
+        return os.path.join(settings.PROJECT_ROOT, 'scouter/static/faces/', self.face + '.jpg')
 
     def original_path(self):
         return os.path.join(settings.PROJECT_ROOT, 'scouter/static/posted_images/', self.face + '.jpg')
