@@ -4,9 +4,46 @@
 
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
 
+{%  block head %}
+    <link rel="stylesheet" href="{% static "css/glass.css" %}">
+{% endblock %}
+
 {% block content %}
-<h3>Power level: {{ person.power_level }}</h3>
-<img src="{{ person.face_path }}">
-<p>Original:</p>
-<img src="{{ person.original_path }}">
+<div class="persons">
+{% for person in persons %}
+    {% if person.face_path %}
+    <div class="card col-xs-12 col-sm-6 col-md-4 col-lg-4">
+        <article>
+            <figure>
+                <img src="{{ person.face_path }}" height="180" width="120">
+            </figure>
+            <section>
+                <h1 style="color:yellow">Power Level:</h1>
+                <h1 style="color:yellow">{{ person.power_level }}</h1>
+                {% if person.power_level > 9000 %}
+                <h1 stype="color:red">IT'S OVER 9000!!!!</h1>
+                {% endif %}
+            </section>
+            <p class="card_date">{{ person.created.date }}</p>
+        </article>
+        <p class="card_text text-center"><a href="#" class="btn btn-primary original_flipper">Original</a>
+            <a href="#" class="btn btn-primary">Share</a></p>
+
+    </div>
+    {% else %}
+    <div class="card col-lg-3">
+        <article>
+            <img src="{{ face.original_path }}">
+        </article>
+{#        <p class="card_text text-center"><a href="#" class="btn btn-primary original_flipper">Original</a>#}
+{#            <a href="#" class="btn btn-primary">Share</a></p>#}
+
+    </div>
+    {% endif %}
+{% endfor %}
+<div style='clear:both;'></div>
+</div>
+
+{#<p>Original:</p>#}
+{#<img src="{{ person.original_path }}">#}
 {% endblock %}

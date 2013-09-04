@@ -86,4 +86,39 @@ footer {
 .logout_button {
     margin-top: 10px;
     margin-right: 20px;
+    float:right;
+}
+.navbar-header {
+    width:100%;
+}
+.card {
+    margin-bottom:20px;
+}
+.card_date {
+    margin-top:5px;
+    position:absolute;
+    bottom:0;
+    right:10px;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size:14px;
+}
+.card_text {
+    margin-top: 5px;
+}
+footer {
+    height:100px;
+    position:absolute;
+    /*bottom:0;*/
+    left: 0;
+    right: 0;
+    overflow: hidden;
+}
+.footer p {
+    font-size:16px;
+    margin:0;
+}
+.persons {
+}
+.clear {
+    clear:both;
 }

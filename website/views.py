@@ -130,16 +130,45 @@ def logout_view(request):
     logout(request)
     return HttpResponseRedirect('/')
 
+@login_required
+def person(request, person_id=None):
+    """
+    Four possible ways. If person_id, show it, logged in or not. If logged in and no person_id, show all for user.
+    If neither, throw errror.
+    If person_id = 'staff' and user is staff, show all images.
+    @param request:
+    @type request:
+    @param person_id:
+    @type person_id:
+    @return:
+    @rtype:
+    """
+    template_data = {
+        'persons': []
+    }
+    if person_id:
+        persons = ScoutedPerson.objects.filter(id=person_id)
+    elif request.user.is_authenticated():
+        persons = ScoutedPerson.objects.filter(user=request.user.id)
+    elif request.user.is_staff and person_id == 'staff':
+        persons = ScoutedPerson.objects.all()
+    else:
+        persons = ScoutedPerson.objects.none()
 
-def person(request, person_id):
-    template_data = {}
-    try:
-        sp = ScoutedPerson.objects.get(id=person_id)
-        template_data['person'] = model_to_dict(sp)
-        template_data['person']['face_path'] = sp.face_path()
-        template_data['person']['original_path'] = sp.original_path()
-    except ScoutedPerson.DoesNotExist:
-        return HttpResponseNotFound("Could not find scouted person with ID: {0}".format(person_id))
+    # Error handling
+    if len(persons) == 0:
+        if person_id:
+            return HttpResponseNotFound()
+        else:
+            return render_to_response("person.html", template_data, context_instance=RequestContext(request))
+    # Convert queryset to objects to return to template renderer
+    for person in persons:
+        person_dict = model_to_dict(person)
+        person_dict['face_path'] = person.face_path()
+        person_dict['original_path'] = person.original_path()
+        person_dict['created'] = person.created
+        template_data['persons'].append(person_dict)
+
     return render_to_response("person.html", template_data, context_instance=RequestContext(request))
 
 def _get_mirror(user_id):

@@ -109,6 +109,7 @@ class ScoutedPerson(models.Model):
     lat = models.CharField(max_length=128, blank=True, null=True, default=None)
     power_level = models.IntegerField(default=0)
     user = models.ForeignKey(User)
+    created = models.DateTimeField(auto_now_add=True)
 
     def face_path(self):
         if self.face is None:
@@ -117,3 +118,9 @@ class ScoutedPerson(models.Model):
 
     def original_path(self):
         return os.path.join('/static/posted_images/', self.original + '.jpg')
+
+    def __str__(self):
+        return "{0} image, power level: {1}".format(self.user.username, self.power_level)
+
+    def __repr__(self):
+        return self.__str__()
