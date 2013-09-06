@@ -13,7 +13,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import logout
 from allauth.socialaccount.models import SocialAccount, SocialToken
 from website.models import GoogleCredential, ScoutedPerson
-from website.glass.mirror import Mirror, Contact
+from website.glass.mirror import Mirror, Contact, TimelineMenuItem
 from scouter import scout
 from glass import oauth_utils
 
@@ -89,12 +89,18 @@ def subscription_reply(request):
     # Save the old image and the new image as an object for display later.
     try:
         if len(cards) > 0:
-            scouted_person = ScoutedPerson(face=cards[0]['face'], original=filename, user=user)
+            scouted_person = ScoutedPerson(face=cards[0]['face'], original=filename, user=user,
+                                           cards[0]['power_level'])
         else:
             scouted_person = ScoutedPerson(face=None, original=filename, user=user)
         scouted_person.save()
     except Exception:
         debug_logger.exception("Problem saving ScoutedPerson")
+    # Add in SHARE and DELETE options to timeline card.
+    share = TimelineMenuItem(action="SHARE")
+    delete = TimelineMenuItem(action="DELETE")
+    timeline.add_menu_item(share)
+    timeline.add_menu_item(delete)
     # Update the returned card.
     mirror.update_timeline(timeline)
     return HttpResponse('OK')

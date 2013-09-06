@@ -459,6 +459,8 @@ class Timeline(object):
             timeline_body['html'] = self.html
         if self.notify:
             timeline_body['notification'] = {'level': 'DEFAULT'}
+        if self.menu_items:
+            timeline_body['menuItmes'] = self.menu_items
         return timeline_body
 
     def add_menu_item(self, item):
@@ -466,7 +468,10 @@ class Timeline(object):
         Adds a menu item to the timeline card.
         Accepts either a string for a default menu item (must be in DEFAULT_MENU_ITEMS), or a TimelineMenuItem.
         """
-        pass
+        if item in self.menu_items:
+            raise ValueError("Item already in menu.")
+        self.menu_items.append(item)
+
 
     def __str__(self):
         return str(self.id)
