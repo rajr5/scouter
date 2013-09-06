@@ -90,7 +90,7 @@ def subscription_reply(request):
     try:
         if len(cards) > 0:
             scouted_person = ScoutedPerson(face=cards[0]['face'], original=filename, user=user,
-                                           cards[0]['power_level'])
+                                           power_level=cards[0]['power_level'])
         else:
             scouted_person = ScoutedPerson(face=None, original=filename, user=user)
         scouted_person.save()
